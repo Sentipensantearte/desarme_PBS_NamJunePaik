@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PBS (1963–2000) · Nam June Paik</title>
+
+  <!-- ══════════════════════════════════════
+       FUENTES DE GOOGLE
+       VT323        → tipografía CRT / display principal
+       Share Tech Mono → textos monoespaciados secundarios
+       Libre Baskerville → cuerpo de texto en serif (citas, análisis)
+       Si querés cambiar las fuentes, reemplazá estos @import
+       y actualizá las variables --display, --sans, --serif en styles.css
+  ══════════════════════════════════════ -->
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+  <!-- ── Estilos principales ── -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       CAPA DE RUIDO (estática de fondo)
+       Es un <canvas> que se llena con píxeles aleatorios
+       mediante JavaScript. Ver noise.js para la lógica.
+       Opacity controlada en styles.css → #noise { opacity: .045 }
+  ══════════════════════════════════════ -->
+  <canvas id="noise"></canvas>
+
+  <!-- ══════════════════════════════════════
+       CAPA DE GLIFOS FLOTANTES
+       Los glifos de escrituras antiguas que suben de abajo.
+       Se generan dinámicamente en main.js → initGlyphs()
+       Podés editar el array de caracteres en main.js
+  ══════════════════════════════════════ -->
+  <div id="glyphs"></div>
+
+  <!-- ══════════════════════════════════════
+       IMAGEN DE FONDO (OPCIONAL)
+       Para agregar una imagen de fondo a toda la página:
+       1. Poné tu imagen en la misma carpeta (ej: fondo.jpg)
+       2. Descomentá la línea de abajo
+       3. En styles.css, buscá la sección "IMAGEN DE FONDO"
+          y ajustá opacity, blend-mode, etc.
+  ══════════════════════════════════════ -->
+  <!-- <div id="bg-image"></div> -->
+
+  <!-- ══════════════════════════════════════
+       OVERLAY DE SCANLINES
+       La trama de líneas horizontales finas que simulan
+       una pantalla CRT. Es solo CSS (repeating-linear-gradient).
+       Buscá #scanlines en styles.css para modificar intensidad.
+  ══════════════════════════════════════ -->
+  <div id="scanlines"></div>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       PANTALLA DE INTRO
+       Lo primero que ve el usuario. Contiene:
+         .i-eye     → fila de glifos decorativos superiores
+         .i-title   → "PBS" grande
+         .i-dates   → "(1963 – 2000)"
+         .i-author  → datos del artista
+         .i-neon    → fila de escrituras antiguas en neón
+         .i-enter   → botón de entrada
+       Todos los elementos tienen animación de entrada escalonada
+       definida en styles.css con animation-delay.
+       La función enterStage() en main.js maneja la transición.
+  ════════════════════════════════════════════════════════ -->
+  <div id="intro">
+    <p class="i-eye">◈ ✦ ◈ ✦ ◈ ✦ ◈</p>
+    <h1 class="i-title">PBS</h1>
+    <p class="i-dates">(1963 – 2000)</p>
+    <p class="i-author">Nam June Paik &nbsp;·&nbsp; 1993 &nbsp;·&nbsp; Trenton, New Jersey</p>
+    <p class="i-neon">𓂀 &nbsp; 𒀭 &nbsp; 한 &nbsp; ब्र &nbsp; ✦ &nbsp; ब्र &nbsp; 한 &nbsp; 𒀭 &nbsp; 𓂀</p>
+    <button class="i-enter" onclick="enterStage()">▶ &nbsp; SINTONIZAR</button>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       STAGE — el "mural" con los monitores
+       Este div es el contenedor vacío donde JavaScript
+       inyecta los 9 monitores en buildStage() (main.js).
+       
+       #stage-title → título decorativo superior
+       #stage-hint  → instrucción de uso inferior (parpadea)
+       
+       Los monitores se agregan dinámicamente: cada uno es un
+       <div class="mon"> creado en buildStage().
+  ════════════════════════════════════════════════════════ -->
+  <div id="stage">
+    <p id="stage-title">
+      PBS (1963–2000) &nbsp;·&nbsp; NAM JUNE PAIK
+      &nbsp;·&nbsp; NJN BUILDING, TRENTON NJ &nbsp;·&nbsp; 1993
+    </p>
+    <p id="stage-hint">CLICK EN UN MONITOR PARA EXPANDIR &nbsp;·&nbsp; ESC PARA CERRAR</p>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       LIGHTBOX — panel expandido (cada "canal")
+       Se activa al hacer click en un monitor.
+       
+       .lb-wrap     → contenedor principal con borde CRT
+       .lb-bar      → barra superior con botones y navegación
+       .lb-screen   → área scrolleable con el contenido
+       #lb-content  → aquí se inyecta el HTML de cada canal
+                      (definido en data.js, propiedad html())
+       
+       La función openLb(i) en main.js maneja la apertura.
+       closeLb() cierra. navLb(±1) navega entre canales.
+  ════════════════════════════════════════════════════════ -->
+  <div id="lightbox">
+    <div class="lb-wrap">
+
+      <!-- Barra superior estilo terminal -->
+      <div class="lb-bar">
+        <div class="lb-dots">
+          <!-- Botón rojo → cerrar -->
+          <div class="lb-dot close"  onclick="closeLb()"  title="Cerrar"></div>
+          <!-- Botón verde → canal anterior -->
+          <div class="lb-dot prev"   onclick="navLb(-1)"  title="Anterior"></div>
+          <!-- Botón amarillo → canal siguiente -->
+          <div class="lb-dot next"   onclick="navLb(1)"   title="Siguiente"></div>
+        </div>
+        <!-- Identificador del canal actual (se llena por JS) -->
+        <span class="lb-id" id="lb-id">—</span>
+        <!-- Flechas de navegación -->
+        <div class="lb-nav">
+          <button class="lb-arr" onclick="navLb(-1)">◀</button>
+          <button class="lb-arr" onclick="navLb(1)">▶</button>
+        </div>
+      </div>
+
+      <!-- Pantalla CRT con contenido -->
+      <div class="lb-screen">
+        <div class="lb-content" id="lb-content">
+          <!-- El contenido de cada canal se inyecta aquí -->
+        </div>
+      </div>
+
+    </div><!-- /.lb-wrap -->
+  </div><!-- /#lightbox -->
+
+
+  <!-- ══════════════════════════════════════
+       SCRIPTS — orden importante
+       1. data.js   → los 9 canales (contenido editorial)
+       2. main.js   → lógica de la instalación
+  ══════════════════════════════════════ -->
+  <script src="data.js"></script>
+  <script src="main.js"></script>
+
+</body>
+</html>

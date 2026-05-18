@@ -1,0 +1,920 @@
+/* ================================================================
+   STYLES.CSS — PBS (1963–2000) · Nam June Paik
+   Instalación web interactiva · Arte Digital Aplicado 2026
+   ================================================================
+   
+   ÍNDICE DE SECCIONES:
+   1.  Variables (tokens de diseño)
+   2.  Reset y base
+   3.  Capas de fondo (ruido, glifos, scanlines, imagen opcional)
+   4.  Pantalla de intro
+   5.  Stage — el mural
+   6.  Monitor individual (.mon)
+   7.  Pantalla del monitor (.screen, efectos CRT)
+   8.  Lightbox — panel expandido
+   9.  Tipografía de contenido (canales)
+   10. Componentes de contenido (hipótesis, principios, etc.)
+   11. Animaciones y keyframes
+   ================================================================ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   1. VARIABLES
+   Cambiá estos valores para modificar la paleta completa.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+
+  /* Colores principales */
+  --bg:      #050709;   /* fondo global — negro casi puro */
+  --bezel:   #131519;   /* color del bisel del monitor */
+  --bezel2:  #1c2026;   /* bisel de la barra superior del lightbox */
+  --screen:  #080c10;   /* color de la pantalla apagada */
+
+  /* Fósforo — el color del texto en pantalla CRT */
+  --p:  #b8d4b0;                   /* fósforo principal (verde claro) */
+  --p2: rgba(184,212,176,0.55);    /* fósforo medio (textos secundarios) */
+  --p3: rgba(184,212,176,0.18);    /* fósforo suave (decorativo) */
+
+  /* Acentos de neón — usados en los tres marcos teóricos */
+  --teal:   #00c9a7;   /* Manovich */
+  --amber:  #e8b830;   /* Hipótesis / títulos de intro */
+  --coral:  #ff6e6e;   /* Foglia */
+  --purple: #b794f4;   /* Murray */
+  --blue:   #6db4f0;   /* links y recursos */
+
+  /* Brillos (para text-shadow y box-shadow) */
+  --glow-green: rgba(0,201,167,0.35);
+  --glow-amber: rgba(232,184,48,0.40);
+  --glow-p:     rgba(184,212,176,0.12);
+
+  /* Tipografías — ver index.html para los @import de Google Fonts */
+  --sans:    'Share Tech Mono','Courier New',monospace;   /* mono secundario */
+  --display: 'VT323',monospace;                           /* display / CRT */
+  --serif:   'Libre Baskerville',Georgia,serif;           /* cuerpo / citas */
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2. RESET Y BASE
+   ──────────────────────────────────────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;          /* sin scroll en el body — todo es posicionado */
+  background: var(--bg);
+  color: var(--p);
+  font-family: var(--sans);
+}
+
+button {
+  font-family: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+a {
+  color: var(--blue);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   3. CAPAS DE FONDO
+   ──────────────────────────────────────────────────────────────── */
+
+/* Canvas de ruido / estática global
+   Para modificar la intensidad: cambiá opacity (.045 = muy sutil) */
+#noise {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: .045;
+  pointer-events: none;
+}
+
+/* Contenedor de glifos flotantes */
+#glyphs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Cada glifo individual (se crean en main.js → initGlyphs) */
+.glyph {
+  position: absolute;
+  font-family: serif;
+  font-size: 1.8rem;
+  color: var(--p);
+  opacity: 0;
+  animation: glyphrise linear infinite;
+}
+
+/* Overlay de scanlines (líneas horizontales CRT)
+   Para intensificar: subí el valor rgba de la segunda línea
+   Para eliminar: comentá todo el selector */
+#scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,.07) 2px,   /* ← cambiá .07 para más/menos intensidad */
+    rgba(0,0,0,.07) 4px
+  );
+}
+
+/* ── IMAGEN DE FONDO (OPCIONAL) ──────────────────────────────
+   Para activar:
+   1. Descomentá el div #bg-image en index.html
+   2. Descomentá y ajustá las reglas de abajo
+   3. Reemplazá 'tu-imagen.jpg' con el nombre de tu archivo
+
+#bg-image {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image: url('tu-imagen.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: .08;           ← muy bajo para que no tape el contenido
+  mix-blend-mode: screen; ← probá también: overlay, multiply, luminosity
+  pointer-events: none;
+}
+
+   Si querés una imagen diferente por monitor, usás la misma idea
+   pero con position:absolute dentro de .screen y z-index:1
+──────────────────────────────────────────────────────────── */
+
+
+/* ────────────────────────────────────────────────────────────────
+   4. PANTALLA DE INTRO
+   Cada elemento (.i-*) tiene animation-delay escalonado
+   para que aparezcan uno a uno al cargar la página.
+   ──────────────────────────────────────────────────────────────── */
+#intro {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Clase que se agrega al hacer click en "Sintonizar" → fade out */
+#intro.hide {
+  animation: fadeOut .8s ease forwards;
+}
+
+/* Fila de glifos decorativos arriba del título */
+.i-eye {
+  font-size: clamp(36px,8vw,72px);
+  letter-spacing: .7rem;
+  color: var(--p3);
+  opacity: 0;
+  animation: appear .5s .2s ease forwards;
+}
+
+/* Título principal "PBS" */
+.i-title {
+  font-family: var(--display);
+  font-size: clamp(72px,18vw,180px);  /* ← tamaño responsive */
+  line-height: .9;
+  letter-spacing: .02em;
+  color: var(--p);
+  text-shadow: 0 0 80px var(--glow-p), 0 0 200px rgba(184,212,176,.05);
+  opacity: 0;
+  animation: appear .7s .7s ease forwards;
+}
+
+/* Fechas "(1963 – 2000)" */
+.i-dates {
+  font-family: var(--display);
+  font-size: clamp(20px,4vw,42px);
+  color: var(--amber);
+  text-shadow: 0 0 30px var(--glow-amber);
+  opacity: 0;
+  animation: appear .6s 1.3s ease forwards;
+}
+
+/* Nombre del artista y datos */
+.i-author {
+  font-size: clamp(10px,1.8vw,14px);
+  letter-spacing: .35em;
+  color: var(--p2);
+  margin-top: .5rem;
+  opacity: 0;
+  animation: appear .5s 1.9s ease forwards;
+}
+
+/* Fila de escrituras antiguas en verde neón */
+.i-neon {
+  font-size: clamp(16px,3vw,28px);
+  letter-spacing: .6rem;
+  color: var(--teal);
+  text-shadow: 0 0 20px var(--glow-green);
+  margin-top: 2.5rem;
+  opacity: 0;
+  animation: appear .6s 2.6s ease forwards;
+}
+
+/* Botón de entrada */
+.i-enter {
+  font-family: var(--display);
+  font-size: clamp(16px,2.5vw,22px);
+  letter-spacing: .25em;
+  color: var(--teal);
+  border: 1px solid var(--teal);
+  padding: 10px 36px;
+  margin-top: 2.5rem;
+  opacity: 0;
+  animation: appear .5s 3.4s ease forwards;
+  cursor: pointer;
+  transition: background .2s, color .2s, box-shadow .2s;
+  text-shadow: 0 0 10px var(--glow-green);
+}
+.i-enter:hover {
+  background: var(--teal);
+  color: var(--bg);
+  box-shadow: 0 0 24px var(--glow-green);
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   5. STAGE — el mural
+   Contenedor donde se inyectan los monitores via JS.
+   ──────────────────────────────────────────────────────────────── */
+#stage {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  display: none;          /* oculto hasta que se llama enterStage() */
+  overflow: hidden;
+  cursor: crosshair;      /* cursor personalizado */
+}
+
+/* Título flotante arriba */
+#stage-title {
+  position: absolute;
+  top: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--display);
+  font-size: clamp(11px,1.5vw,16px);
+  letter-spacing: .3em;
+  color: var(--p2);
+  z-index: 10;
+  pointer-events: none;
+  text-shadow: 0 0 12px var(--glow-p);
+}
+
+/* Instrucción de uso (parpadea) */
+#stage-hint {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: .3em;
+  color: var(--p3);
+  z-index: 10;
+  pointer-events: none;
+  animation: blink 2s ease-in-out infinite;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   6. MONITOR INDIVIDUAL
+   Cada tarjeta-televisor del mural.
+   La posición (left, top) se calcula en main.js → buildStage()
+   ──────────────────────────────────────────────────────────────── */
+.mon {
+  position: absolute;
+  cursor: pointer;
+  transition: transform .25s ease;
+  transform-origin: center center;
+}
+
+/* Hover: leve elevación de la sombra exterior */
+.mon:hover .bezel {
+  box-shadow:
+    0 0 40px rgba(184,212,176,.14),
+    0 0 80px rgba(184,212,176,.05);
+}
+
+/* Cuando está en hover, el LED parpadea más rápido */
+.mon:hover .led {
+  animation: ledfast .4s ease-in-out infinite;
+}
+
+/* Efecto glitch: el texto del label se desplaza brevemente
+   Se aplica con class="mon glitch" en los monitores 06 y 09 */
+.mon.glitch .m-label {
+  animation: glitch 4s 2s infinite;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   7. PARTES DEL MONITOR
+   ──────────────────────────────────────────────────────────────── */
+
+/* Bisel exterior del televisor */
+.bezel {
+  background: var(--bezel);
+  border: 1.5px solid rgba(184,212,176,.06);
+  border-radius: 10px;
+  padding: 9px 9px 5px;
+  transition: box-shadow .3s;
+  position: relative;
+}
+
+/* Reflejo sutil en el bisel (pseudo-elemento) */
+.bezel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(255,255,255,.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* La pantalla en sí */
+.screen {
+  background: var(--screen);
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 4/3;
+  box-shadow: inset 0 0 30px rgba(0,0,0,.8);
+}
+
+/* Overlay de pantalla: viñeta + scanlines sobre la pantalla */
+.screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background:
+    radial-gradient(ellipse at 50% 50%, transparent 60%, rgba(0,0,0,.55) 100%),
+    /* ↑ viñeta (oscurece los bordes como una pantalla CRT) */
+    repeating-linear-gradient(
+      0deg,
+      transparent, transparent 2px,
+      rgba(0,0,0,.06) 2px, rgba(0,0,0,.06) 4px
+    );
+    /* ↑ scanlines del monitor */
+  pointer-events: none;
+}
+
+/* Contenido interno de la pantalla del monitor */
+.screen-inner {
+  padding: .7rem;
+  position: relative;
+  z-index: 2;
+  height: 100%;
+}
+
+/* Número de canal */
+.m-ch {
+  font-size: 8px;
+  letter-spacing: .25em;
+  color: var(--p3);
+  margin-bottom: .3rem;
+}
+
+/* Etiqueta del canal (título del monitor) */
+.m-label {
+  font-family: var(--display);
+  line-height: 1.15;
+  color: var(--p);
+}
+
+/* Texto de preview / resumen */
+.m-peek {
+  font-size: 8px;
+  color: var(--p2);
+  line-height: 1.55;
+  margin-top: .35rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+/* Canvas de estática individual de cada monitor
+   (se crea en main.js → makeNoise) */
+.mon-noise {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: .06;          /* ← subí este valor para más estática visible */
+  border-radius: 5px;
+}
+
+/* Franja inferior del bisel (marca + LED) */
+.bezel-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 2px 1px;
+}
+
+/* Texto de marca */
+.brand {
+  font-size: 8px;
+  letter-spacing: .15em;
+  color: rgba(184,212,176,.1);
+}
+
+/* LED verde que parpadea */
+.led {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 6px var(--teal);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   8. LIGHTBOX — el panel expandido de cada canal
+   ──────────────────────────────────────────────────────────────── */
+
+/* Fondo oscuro con blur */
+#lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5,7,9,.88);
+  backdrop-filter: blur(4px);
+}
+#lightbox.open {
+  display: flex;
+}
+
+/* Contenedor principal del lightbox */
+.lb-wrap {
+  width: min(720px, 94vw);    /* ← cambiá 720px para hacer la ventana más ancha/angosta */
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bezel);
+  border: 1.5px solid rgba(184,212,176,.1);
+  border-radius: 12px;
+  box-shadow:
+    0 0 80px  rgba(0,0,0,.7),
+    0 0 200px rgba(0,0,0,.4);
+  overflow: hidden;
+  animation: lbIn .25s ease;
+}
+
+/* Barra superior estilo macOS / terminal */
+.lb-bar {
+  background: var(--bezel2);
+  border-bottom: 1px solid rgba(184,212,176,.07);
+  padding: .55rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-shrink: 0;
+}
+
+/* Grupo de tres botones de color */
+.lb-dots {
+  display: flex;
+  gap: 6px;
+}
+.lb-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.lb-dot.close  { background: #ff5f57; }
+.lb-dot.prev   { background: #28c840; }
+.lb-dot.next   { background: #febc2e; }
+.lb-dot:hover  { filter: brightness(1.3); }
+
+/* Identificador del canal actual (centro de la barra) */
+.lb-id {
+  font-size: 10px;
+  letter-spacing: .25em;
+  color: var(--p2);
+  margin: 0 auto;
+}
+
+/* Flechas de navegación (derecha de la barra) */
+.lb-nav {
+  display: flex;
+  gap: 4px;
+}
+.lb-arr {
+  font-family: var(--display);
+  font-size: 18px;
+  color: var(--p2);
+  border: 1px solid rgba(184,212,176,.15);
+  padding: 1px 10px;
+  transition: color .15s, border-color .15s;
+}
+.lb-arr:hover {
+  color: var(--p);
+  border-color: var(--p2);
+}
+
+/* Área scrolleable con la pantalla CRT */
+.lb-screen {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--screen);
+  position: relative;
+  /* Barra de scroll estilizada */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(184,212,176,.15) transparent;
+}
+
+/* Scanlines sobre la pantalla del lightbox */
+.lb-screen::after {
+  content: '';
+  position: fixed;
+  left: 0; right: 0; top: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 3px,
+    rgba(0,0,0,.04) 3px, rgba(0,0,0,.04) 6px
+  );
+}
+
+/* Padding interior del contenido de cada canal */
+.lb-content {
+  padding: 2rem 2.25rem 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   9. TIPOGRAFÍA DE CONTENIDO (dentro de los canales)
+   Estas clases se usan en los HTML de data.js
+   ──────────────────────────────────────────────────────────────── */
+
+/* Texto pequeño en mayúsculas (sección / etiqueta) */
+.c-kicker {
+  font-size: 9px;
+  letter-spacing: .35em;
+  color: var(--p2);
+  margin-bottom: .85rem;
+}
+
+/* Título principal del canal */
+.c-h1 {
+  font-family: var(--display);
+  font-size: clamp(52px,10vw,100px);
+  line-height: .9;
+  text-shadow: 0 0 40px var(--glow-p);
+}
+
+/* Subtítulo debajo del h1 */
+.c-h1-sub {
+  font-family: var(--display);
+  font-size: clamp(20px,3.5vw,32px);
+  color: var(--amber);
+  text-shadow: 0 0 20px var(--glow-amber);
+}
+
+/* Título de sección dentro del canal */
+.c-h2 {
+  font-family: var(--display);
+  font-size: clamp(24px,4vw,38px);
+  margin: 1.75rem 0 .65rem;
+  color: var(--p);
+  text-shadow: 0 0 16px var(--glow-p);
+}
+
+/* Línea separadora */
+.c-rule {
+  border: none;
+  border-top: 1px solid rgba(184,212,176,.07);
+  margin: 1.1rem 0;
+}
+
+/* Bloque de texto corrido */
+.c-body {
+  font-size: 13px;
+  line-height: 1.9;
+  color: rgba(184,212,176,.72);
+}
+.c-body p        { margin-bottom: .85rem; }
+.c-body strong   { color: var(--p); font-weight: normal; }
+.c-body em       { font-style: italic; }
+
+/* Grilla de metadatos (ficha técnica) */
+.meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem 2rem;
+  margin-bottom: 1.25rem;
+}
+.m-row .ml {
+  font-size: 8px;
+  letter-spacing: .2em;
+  color: var(--p2);
+  display: block;
+  margin-bottom: 1px;
+}
+.m-row .mv {
+  font-size: 12.5px;
+  color: var(--p);
+}
+
+/* Fila de estadísticas grandes */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .5rem;
+  margin: 1rem 0;
+}
+.stat {
+  border: 1px solid rgba(184,212,176,.08);
+  padding: .6rem .35rem;
+  text-align: center;
+}
+.stat-v {
+  font-family: var(--display);
+  font-size: 26px;
+  display: block;
+}
+.stat-l {
+  font-size: 8px;
+  letter-spacing: .1em;
+  color: var(--p2);
+  display: block;
+  margin-top: 1px;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   10. COMPONENTES DE CONTENIDO
+   ──────────────────────────────────────────────────────────────── */
+
+/* Caja de hipótesis (con borde izquierdo ámbar) */
+.hip {
+  border-left: 2px solid var(--amber);
+  padding: .9rem 1.1rem;
+  margin: 1.25rem 0;
+  background: rgba(232,184,48,.04);
+}
+.hip-lbl {
+  font-size: 8px;
+  letter-spacing: .3em;
+  color: var(--amber);
+  margin-bottom: .5rem;
+}
+.hip-txt {
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.8;
+  color: rgba(232,184,48,.85);
+  font-style: italic;
+}
+
+/* Tarjeta de principio teórico
+   Variantes de color: .tl (teal), .pu (purple), .co (coral) */
+.pri {
+  border: 1px solid rgba(184,212,176,.08);
+  padding: .85rem 1rem;
+  margin-bottom: .6rem;
+  position: relative;
+  overflow: hidden;
+}
+/* La franja de color izquierda */
+.pri::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+}
+.pri.tl::before { background: var(--teal);   }
+.pri.pu::before { background: var(--purple); }
+.pri.co::before { background: var(--coral);  }
+
+/* Título del principio */
+.pri-h {
+  font-family: var(--display);
+  font-size: 18px;
+  margin-bottom: .3rem;
+}
+.pri.tl .pri-h { color: var(--teal);   }
+.pri.pu .pri-h { color: var(--purple); }
+.pri.co .pri-h { color: var(--coral);  }
+
+/* Cuerpo del principio */
+.pri-b {
+  font-size: 12.5px;
+  line-height: 1.8;
+  color: rgba(184,212,176,.62);
+}
+
+/* Bloque de cita */
+.cita {
+  border-left: 2px solid rgba(184,212,176,.15);
+  padding: .6rem .9rem;
+  margin: 1rem 0;
+  font-family: var(--serif);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--p2);
+  line-height: 1.65;
+}
+.cita-s {
+  font-style: normal;
+  font-size: 10px;
+  margin-top: .3rem;
+  display: block;
+  font-family: var(--sans);
+}
+
+/* Franja de fases de Foglia */
+.fase-strip {
+  display: flex;
+  border: 1px solid rgba(184,212,176,.09);
+  overflow: hidden;
+  margin-bottom: .85rem;
+}
+.fs {
+  flex: 1;
+  padding: .5rem .2rem;
+  border-right: 1px solid rgba(184,212,176,.09);
+  text-align: center;
+  font-size: 9px;
+  color: rgba(184,212,176,.4);
+}
+.fs:last-child { border-right: none; }
+.fs .fn {
+  font-family: var(--display);
+  font-size: 14px;
+  display: block;
+  color: rgba(184,212,176,.55);
+}
+/* La fase activa se resalta en coral */
+.fs.hl                  { background: rgba(255,110,110,.07); }
+.fs.hl, .fs.hl .fn      { color: var(--coral); }
+
+/* Links de recursos */
+.rlink {
+  display: flex;
+  gap: .75rem;
+  align-items: flex-start;
+  border: 1px solid rgba(184,212,176,.09);
+  padding: .75rem .9rem;
+  margin-bottom: .5rem;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .2s, background .2s;
+}
+.rlink:hover {
+  border-color: rgba(184,212,176,.25);
+  background: rgba(184,212,176,.02);
+}
+.rlink .ri {
+  font-family: var(--display);
+  font-size: 20px;
+  color: var(--blue);
+  min-width: 20px;
+}
+.rlink .rt { font-size: 12.5px; color: var(--blue); }
+.rlink .rd { font-size: 10px;   color: var(--p2);   margin-top: 2px; }
+
+/* Ítem de bibliografía */
+.bib {
+  margin-bottom: .65rem;
+  font-size: 12px;
+  color: rgba(184,212,176,.55);
+  line-height: 1.7;
+  border-bottom: 1px solid rgba(184,212,176,.05);
+  padding-bottom: .65rem;
+}
+
+/* Canal de cierre decorativo */
+.decor { text-align: center; padding: 3rem 0; }
+.dg1 {
+  font-size: clamp(32px,6vw,64px);
+  line-height: 1.9;
+  letter-spacing: .4rem;
+  color: var(--teal);
+  text-shadow: 0 0 30px var(--glow-green);
+  opacity: .8;
+}
+.dg2 {
+  font-size: clamp(20px,3.5vw,36px);
+  color: var(--purple);
+  text-shadow: 0 0 20px rgba(183,148,244,.4);
+  letter-spacing: .3rem;
+  margin: .5rem 0;
+}
+.dg3 {
+  font-size: clamp(14px,2vw,22px);
+  color: var(--amber);
+  text-shadow: 0 0 15px var(--glow-amber);
+  letter-spacing: .25rem;
+}
+.dcred {
+  font-size: 10px;
+  letter-spacing: .2em;
+  color: var(--p2);
+  line-height: 2.2;
+  margin-top: 2rem;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   11. ANIMACIONES Y KEYFRAMES
+   ──────────────────────────────────────────────────────────────── */
+
+/* Aparición suave (usada en intro) */
+@keyframes appear {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Fade out (intro al salir) */
+@keyframes fadeOut {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* Glifos flotando hacia arriba */
+@keyframes glyphrise {
+  0%   { opacity: 0;    transform: translateY(102vh) rotate(-4deg); }
+  8%   { opacity: .035; }
+  90%  { opacity: .035; }
+  100% { opacity: 0;    transform: translateY(-5vh) rotate(4deg);   }
+}
+
+/* LED pulsando lento */
+@keyframes pulse {
+  0%,100% { opacity: 1;  }
+  50%     { opacity: .2; }
+}
+
+/* LED pulsando rápido (hover) */
+@keyframes ledfast {
+  0%,100% { opacity: 1;  }
+  50%     { opacity: .2; }
+}
+
+/* Parpadeo del hint de uso */
+@keyframes blink {
+  0%,100% { opacity: .4; }
+  50%     { opacity: .9; }
+}
+
+/* Apertura del lightbox */
+@keyframes lbIn {
+  from { opacity: 0; transform: scale(.96); }
+  to   { opacity: 1; transform: scale(1);   }
+}
+
+/* Glitch de texto (monitores 06 y 09) */
+@keyframes glitch {
+  0%,94%,100% {
+    transform: none;
+    text-shadow: none;
+  }
+  95% {
+    transform: translate(-2px, 0);
+    text-shadow: 2px 0 var(--coral);
+  }
+  96% {
+    transform: translate(2px, 0);
+    text-shadow: -2px 0 var(--purple);
+  }
+  97% { transform: none; }
+}
