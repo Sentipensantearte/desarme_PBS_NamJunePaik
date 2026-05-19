@@ -3,153 +3,422 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PBS (1963–2000) · Nam June Paik</title>
+  <title>Desarme · PBS · Nam June Paik</title>
 
-  <!-- ══════════════════════════════════════
-       FUENTES DE GOOGLE
-       VT323        → tipografía CRT / display principal
-       Share Tech Mono → textos monoespaciados secundarios
-       Libre Baskerville → cuerpo de texto en serif (citas, análisis)
-       Si querés cambiar las fuentes, reemplazá estos @import
-       y actualizá las variables --display, --sans, --serif en styles.css
-  ══════════════════════════════════════ -->
-  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <!--
+    TIPOGRAFÍAS
+    Chakra Petch → textos de interfaz, datos, etiquetas
+    Tilt Neon    → títulos principales y neón decorativo
+    Para cambiar: reemplazá la URL y actualizá --fuente-ui y --fuente-neon en styles.css
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600&family=Tilt+Neon&display=swap" rel="stylesheet">
 
-  <!-- ── Estilos principales ── -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- ══════════════════════════════════════
-       CAPA DE RUIDO (estática de fondo)
-       Es un <canvas> que se llena con píxeles aleatorios
-       mediante JavaScript. Ver noise.js para la lógica.
-       Opacity controlada en styles.css → #noise { opacity: .045 }
-  ══════════════════════════════════════ -->
-  <canvas id="noise"></canvas>
+  <!--
+    ═══════════════════════════════════════════
+    IMAGEN DE FONDO
+    Apunta a data/fondo.png. Para cambiarla:
+    → en styles.css buscá #imagen-fondo y cambiá la URL
+    ═══════════════════════════════════════════
+  -->
+  <div id="imagen-fondo" aria-hidden="true"></div>
 
-  <!-- ══════════════════════════════════════
-       CAPA DE GLIFOS FLOTANTES
-       Los glifos de escrituras antiguas que suben de abajo.
-       Se generan dinámicamente en main.js → initGlyphs()
-       Podés editar el array de caracteres en main.js
-  ══════════════════════════════════════ -->
-  <div id="glyphs"></div>
-
-  <!-- ══════════════════════════════════════
-       IMAGEN DE FONDO (OPCIONAL)
-       Para agregar una imagen de fondo a toda la página:
-       1. Poné tu imagen en la misma carpeta (ej: fondo.jpg)
-       2. Descomentá la línea de abajo
-       3. En styles.css, buscá la sección "IMAGEN DE FONDO"
-          y ajustá opacity, blend-mode, etc.
-  ══════════════════════════════════════ -->
-  <!-- <div id="bg-image"></div> -->
-
-  <!-- ══════════════════════════════════════
-       OVERLAY DE SCANLINES
-       La trama de líneas horizontales finas que simulan
-       una pantalla CRT. Es solo CSS (repeating-linear-gradient).
-       Buscá #scanlines en styles.css para modificar intensidad.
-  ══════════════════════════════════════ -->
-  <div id="scanlines"></div>
+  <!--
+    OVERLAY DE SCANLINES (efecto CRT)
+    Solo decoración. Para quitarlo: eliminá este div
+    y el bloque #lineas-crt de styles.css
+  -->
+  <div id="lineas-crt" aria-hidden="true"></div>
 
 
-  <!-- ════════════════════════════════════════════════════════
-       PANTALLA DE INTRO
-       Lo primero que ve el usuario. Contiene:
-         .i-eye     → fila de glifos decorativos superiores
-         .i-title   → "PBS" grande
-         .i-dates   → "(1963 – 2000)"
-         .i-author  → datos del artista
-         .i-neon    → fila de escrituras antiguas en neón
-         .i-enter   → botón de entrada
-       Todos los elementos tienen animación de entrada escalonada
-       definida en styles.css con animation-delay.
-       La función enterStage() en main.js maneja la transición.
-  ════════════════════════════════════════════════════════ -->
-  <div id="intro">
-    <p class="i-eye">◈ ✦ ◈ ✦ ◈ ✦ ◈</p>
-    <h1 class="i-title">PBS</h1>
-    <p class="i-dates">(1963 – 2000)</p>
-    <p class="i-author">Nam June Paik &nbsp;·&nbsp; 1993 &nbsp;·&nbsp; Trenton, New Jersey</p>
-    <p class="i-neon">𓂀 &nbsp; 𒀭 &nbsp; 한 &nbsp; ब्र &nbsp; ✦ &nbsp; ब्र &nbsp; 한 &nbsp; 𒀭 &nbsp; 𓂀</p>
-    <button class="i-enter" onclick="enterStage()">▶ &nbsp; SINTONIZAR</button>
-  </div>
+  <main id="instalacion">
+
+    <!--
+      ═══════════════════════════════════════════
+      PANTALLA DE INICIO
+      Lo primero que ve el usuario.
+      Editá libremente los textos de esta sección.
+      ═══════════════════════════════════════════
+    -->
+    <section id="pantalla-inicio" aria-labelledby="titulo-obra">
+      <header class="intro-contenido">
+
+        <!-- Título principal de la obra -->
+        <h1 class="intro-titulo" id="titulo-obra">PBS</h1>
+
+        <!-- Fechas del período histórico que abarca la obra -->
+        <p class="intro-fechas">(1963 – 2000)</p>
+
+        <!-- Artista y año de instalación -->
+        <p class="intro-artista">Nam June Paik · 1993</p>
+
+        <!-- Botón de entrada. El onclick llama a entrarAlMural() en main.js -->
+        <button class="boton-sintonizar" type="button" onclick="entrarAlMural()">
+          Sintonizá
+        </button>
+
+      </header>
+    </section>
 
 
-  <!-- ════════════════════════════════════════════════════════
-       STAGE — el "mural" con los monitores
-       Este div es el contenedor vacío donde JavaScript
-       inyecta los 9 monitores en buildStage() (main.js).
+    <!--
+      ═══════════════════════════════════════════
+      MURAL DE MONITORES
+      El encabezado y la grilla son visibles
+      cuando el usuario hace click en "Sintonizá".
+      Las tarjetas de monitor se generan
+      automáticamente desde los canales de abajo.
+      ═══════════════════════════════════════════
+    -->
+    <section id="mural-monitores" aria-labelledby="mural-titulo">
+      <header class="mural-encabezado">
+        <p id="mural-titulo">PBS (1963–2000) · NAM JUNE PAIK</p>
+        <p id="mural-ayuda">Elegí una pantalla para ampliar</p>
+      </header>
+
+      <!-- Las tarjetas de monitor se insertan aquí por main.js -->
+      <div id="grilla-canales" aria-label="Canales de la obra"></div>
+    </section>
+
+  </main><!-- /#instalacion -->
+
+
+  <!--
+    ═══════════════════════════════════════════════════════════════
+    VISOR EXPANDIDO
+    Se abre al hacer click en un monitor.
+    El contenido proviene de los canales de abajo.
+    No hace falta tocar este bloque para editar contenido.
+    ═══════════════════════════════════════════════════════════════
+  -->
+  <aside id="visor-canal" role="dialog" aria-modal="true"
+         aria-hidden="true" aria-labelledby="visor-canal-id">
+    <article class="visor-marco">
+
+      <!-- Barra superior del visor (botones de control) -->
+      <header class="visor-barra">
+        <button class="control-visor cerrar" type="button"
+                onclick="cerrarVisor()" aria-label="Cerrar"></button>
+        <p class="visor-canal-id" id="visor-canal-id">—</p>
+        <nav class="navegacion-canales" aria-label="Navegación de canales">
+          <button class="boton-navegacion" type="button"
+                  onclick="navegarCanal(-1)" aria-label="Canal anterior">Anterior</button>
+          <button class="boton-navegacion" type="button"
+                  onclick="navegarCanal(1)"  aria-label="Canal siguiente">Siguiente</button>
+        </nav>
+      </header>
+
+      <!-- Área scrolleable donde se muestra el contenido del canal -->
+      <section class="visor-pantalla" tabindex="0">
+        <div id="contenido-canal"></div>
+      </section>
+
+    </article>
+  </aside>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       CANALES — TODO EL CONTENIDO EDITORIAL ESTÁ AQUÍ
        
-       #stage-title → título decorativo superior
-       #stage-hint  → instrucción de uso inferior (parpadea)
+       Cada <article class="canal"> es un canal / pantalla del mural.
        
-       Los monitores se agregan dinámicamente: cada uno es un
-       <div class="mon"> creado en buildStage().
-  ════════════════════════════════════════════════════════ -->
-  <div id="stage">
-    <p id="stage-title">
-      PBS (1963–2000) &nbsp;·&nbsp; NAM JUNE PAIK
-      &nbsp;·&nbsp; NJN BUILDING, TRENTON NJ &nbsp;·&nbsp; 1993
-    </p>
-    <p id="stage-hint">CLICK EN UN MONITOR PARA EXPANDIR &nbsp;·&nbsp; ESC PARA CERRAR</p>
-  </div>
+       CÓMO EDITARLOS:
+       → Cambiá el texto dentro de las etiquetas HTML normalmente.
+       → data-etiqueta  = título que aparece en la tarjeta del monitor
+       → data-resumen   = texto de preview en la tarjeta del monitor
+       → data-visual    = "si" para mostrar la foto de fondo en la tarjeta
+       → data-posicion  = dónde recorta la imagen (ej: "center center", "72% 22%")
+       
+       PARA AGREGAR UN CANAL NUEVO:
+       → Copiá uno de los bloques de abajo y pegalo al final, antes del </div>
+       → Cambiá el número en data-numero y el contenido.
+       
+       PARA QUITAR UN CANAL:
+       → Borrá el bloque completo desde <article> hasta </article>.
+       ═══════════════════════════════════════════════════════════════ -->
+  <div id="canales" hidden>
 
 
-  <!-- ════════════════════════════════════════════════════════
-       LIGHTBOX — panel expandido (cada "canal")
-       Se activa al hacer click en un monitor.
-       
-       .lb-wrap     → contenedor principal con borde CRT
-       .lb-bar      → barra superior con botones y navegación
-       .lb-screen   → área scrolleable con el contenido
-       #lb-content  → aquí se inyecta el HTML de cada canal
-                      (definido en data.js, propiedad html())
-       
-       La función openLb(i) en main.js maneja la apertura.
-       closeLb() cierra. navLb(±1) navega entre canales.
-  ════════════════════════════════════════════════════════ -->
-  <div id="lightbox">
-    <div class="lb-wrap">
+    <!-- ─────────────────────────────
+         CANAL 01 · Ficha técnica
+    ───────────────────────────────── -->
+    <article class="canal"
+             data-numero="01"
+             data-etiqueta="Ficha técnica"
+             data-resumen="Datos principales de PBS y su contexto material.">
 
-      <!-- Barra superior estilo terminal -->
-      <div class="lb-bar">
-        <div class="lb-dots">
-          <!-- Botón rojo → cerrar -->
-          <div class="lb-dot close"  onclick="closeLb()"  title="Cerrar"></div>
-          <!-- Botón verde → canal anterior -->
-          <div class="lb-dot prev"   onclick="navLb(-1)"  title="Anterior"></div>
-          <!-- Botón amarillo → canal siguiente -->
-          <div class="lb-dot next"   onclick="navLb(1)"   title="Siguiente"></div>
-        </div>
-        <!-- Identificador del canal actual (se llena por JS) -->
-        <span class="lb-id" id="lb-id">—</span>
-        <!-- Flechas de navegación -->
-        <div class="lb-nav">
-          <button class="lb-arr" onclick="navLb(-1)">◀</button>
-          <button class="lb-arr" onclick="navLb(1)">▶</button>
-        </div>
+      <p class="canal-volanta">Obra analizada</p>
+      <h2 class="canal-titulo">PBS (1963–2000)</h2>
+
+      <div class="layout-dos-columnas">
+
+        <!-- Tabla de datos técnicos -->
+        <dl class="grilla-datos">
+
+          <div>
+            <dt>Artista</dt>
+            <dd>Nam June Paik</dd>
+          </div>
+
+          <div>
+            <dt>Año</dt>
+            <dd>1993</dd>
+          </div>
+
+          <div>
+            <dt>Tipo</dt>
+            <dd>Instalación pública</dd>
+          </div>
+
+          <div>
+            <dt>Ubicación</dt>
+            <dd>NJN Building, Trenton</dd>
+          </div>
+
+          <div>
+            <dt>Materiales</dt>
+            <dd>Monitores, video y neón</dd>
+          </div>
+
+          <div>
+            <dt>Escala</dt>
+            <dd>2 paneles / 52 monitores</dd>
+          </div>
+
+        </dl>
+
+        <!-- Imagen de la obra -->
+        <figure class="figura-obra">
+          <img src="data/fondo.png" alt="Vista general de PBS"
+               style="object-position: center center">
+          <figcaption>
+            <strong>Vista general</strong>
+            <span>La imagen de fondo funciona como referencia visual principal.</span>
+          </figcaption>
+        </figure>
+
+      </div><!-- /.layout-dos-columnas -->
+    </article>
+
+
+    <!-- ─────────────────────────────
+         CANAL 02 · La obra
+    ───────────────────────────────── -->
+    <article class="canal"
+             data-numero="02"
+             data-etiqueta="La obra"
+             data-resumen="Televisores, neón y escritura como una sola arquitectura visual.">
+
+      <p class="canal-volanta">Síntesis</p>
+      <h2 class="canal-titulo">Un mural de señales</h2>
+
+      <div class="texto-canal texto-breve">
+        <p>
+          <em>PBS</em> reúne televisores, luces de neón y signos de distintas
+          escrituras en una estructura mural. La obra convierte el lenguaje de
+          la televisión pública en una composición física, visible desde el
+          espacio arquitectónico.
+        </p>
+        <p>
+          La lógica central es modular: cada monitor funciona como una unidad
+          de señal, mientras el neón arma una capa de escritura luminosa
+          alrededor de las pantallas.
+        </p>
       </div>
 
-      <!-- Pantalla CRT con contenido -->
-      <div class="lb-screen">
-        <div class="lb-content" id="lb-content">
-          <!-- El contenido de cada canal se inyecta aquí -->
-        </div>
+      <figure class="figura-obra">
+        <img src="data/fondo.png" alt="Pantallas y neón"
+             style="object-position: center center">
+        <figcaption>
+          <strong>Pantallas y neón</strong>
+          <span>La composición mezcla imagen electrónica, signos y arquitectura.</span>
+        </figcaption>
+      </figure>
+
+    </article>
+
+
+    <!-- ─────────────────────────────
+         CANAL 03 · Vista general
+         data-visual="si" → muestra la foto en la tarjeta del monitor
+         data-posicion    → recorte de la imagen en la tarjeta
+    ───────────────────────────────── -->
+    <article class="canal"
+             data-numero="03"
+             data-etiqueta="Vista general"
+             data-resumen="Una mirada amplia para leer la composición completa."
+             data-visual="si"
+             data-posicion="center center">
+
+      <p class="canal-volanta">Imagen de la obra</p>
+      <h2 class="canal-titulo">Vista general</h2>
+
+      <figure class="figura-obra">
+        <img src="data/fondo.png" alt="Vista general de la instalación"
+             style="object-position: center center">
+        <figcaption>
+          <strong>Vista general</strong>
+          <span>
+            El conjunto se entiende como una fachada interior: pantallas
+            encastradas, franjas de neón y signos distribuidos por bloques.
+          </span>
+        </figcaption>
+      </figure>
+
+    </article>
+
+
+    <!-- ─────────────────────────────
+         CANAL 04 · Escrituras
+    ───────────────────────────────── -->
+    <article class="canal"
+             data-numero="04"
+             data-etiqueta="Escrituras"
+             data-resumen="El neón funciona como alfabeto, no solo como decoración."
+             data-visual="si"
+             data-posicion="72% 22%">
+
+      <p class="canal-volanta">Imagen de la obra</p>
+      <h2 class="canal-titulo">Escrituras de luz</h2>
+
+      <figure class="figura-obra">
+        <img src="data/fondo.png" alt="Escrituras de neón"
+             style="object-position: 72% 22%">
+        <figcaption>
+          <strong>Escrituras de luz</strong>
+          <span>
+            Los signos aparecen como una genealogía visual de la comunicación:
+            símbolos antiguos, alfabetos y marcas inventadas por la propia obra.
+          </span>
+        </figcaption>
+      </figure>
+
+    </article>
+
+
+    <!-- ─────────────────────────────
+         CANAL 05 · Monitores
+    ───────────────────────────────── -->
+    <article class="canal"
+             data-numero="05"
+             data-etiqueta="Monitores"
+             data-resumen="Las pantallas repiten, interrumpen y fragmentan la señal."
+             data-visual="si"
+             data-posicion="50% 48%">
+
+      <p class="canal-volanta">Imagen de la obra</p>
+      <h2 class="canal-titulo">Monitores como módulos</h2>
+
+      <figure class="figura-obra">
+        <img src="data/fondo.png" alt="Monitores de la instalación"
+             style="object-position: 50% 48%">
+        <figcaption>
+          <strong>Monitores como módulos</strong>
+          <span>
+            Los televisores no son ventanas aisladas: se vuelven piezas de
+            una matriz mayor, casi como píxeles dentro de una escultura.
+          </span>
+        </figcaption>
+      </figure>
+
+    </article>
+
+
+    <!-- ─────────────────────────────
+         CANAL 06 · Lectura breve
+    ───────────────────────────────── -->
+    <article class="canal"
+             data-numero="06"
+             data-etiqueta="Lectura breve"
+             data-resumen="Tres ideas para conectar la obra con el marco teórico.">
+
+      <p class="canal-volanta">Marco conceptual reducido</p>
+      <h2 class="canal-titulo">Tres claves</h2>
+
+      <!-- Grilla de tres tarjetas conceptuales -->
+      <ul class="claves" role="list">
+
+        <li>
+          <span>01</span>
+          <h3>Modularidad</h3>
+          <p>
+            Los monitores operan como unidades independientes dentro
+            de una estructura común.
+          </p>
+        </li>
+
+        <li>
+          <span>02</span>
+          <h3>Espacio</h3>
+          <p>
+            La obra no se mira desde un único punto: se recorre
+            con el cuerpo y con la mirada.
+          </p>
+        </li>
+
+        <li>
+          <span>03</span>
+          <h3>Traducción</h3>
+          <p>
+            Televisión, escritura y neón se traducen entre sí
+            como capas de comunicación.
+          </p>
+        </li>
+
+      </ul>
+
+      <figure class="figura-obra">
+        <img src="data/fondo.png" alt="Detalle del sistema visual"
+             style="object-position: 44% 42%">
+        <figcaption>
+          <strong>Detalle del sistema visual</strong>
+          <span>
+            La teoría queda anclada en lo que se ve:
+            señal, módulo, escritura y recorrido.
+          </span>
+        </figcaption>
+      </figure>
+
+    </article>
+
+
+    <!--
+      ══════════════════════════════════════════════
+      PARA AGREGAR UN CANAL NUEVO:
+      Copiá el bloque de abajo (desde <article> hasta </article>),
+      pegalo aquí, y editá el contenido.
+      ══════════════════════════════════════════════
+
+    <article class="canal"
+             data-numero="07"
+             data-etiqueta="Nombre del canal"
+             data-resumen="Texto corto visible en la tarjeta del monitor.">
+
+      <p class="canal-volanta">Subtítulo pequeño</p>
+      <h2 class="canal-titulo">Título del canal</h2>
+
+      <div class="texto-canal texto-breve">
+        <p>Tu texto acá.</p>
+        <p>Podés tener varios párrafos.</p>
       </div>
 
-    </div><!-- /.lb-wrap -->
-  </div><!-- /#lightbox -->
+    </article>
+    -->
 
 
-  <!-- ══════════════════════════════════════
-       SCRIPTS — orden importante
-       1. data.js   → los 9 canales (contenido editorial)
-       2. main.js   → lógica de la instalación
-  ══════════════════════════════════════ -->
-  <script src="data.js"></script>
+  </div><!-- /#canales -->
+
+
+  <!--
+    SCRIPTS
+    main.js lee los canales del HTML y maneja la interacción.
+    No necesitás tocar este archivo para editar contenido.
+  -->
   <script src="main.js"></script>
 
 </body>
