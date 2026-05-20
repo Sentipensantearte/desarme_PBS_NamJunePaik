@@ -1,169 +1,457 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Desarme · PBS · Nam June Paik</title>
 
   <!--
-    TIPOGRAFÍAS
-    Chakra Petch → textos de interfaz, datos, etiquetas
-    Tilt Neon    → títulos principales y neón decorativo
-    Para cambiar: reemplazá la URL y actualizá --fuente-ui y --fuente-neon en styles.css
+    ═══════════════════════════════════════════════
+    CONFIGURACIÓN GENERAL
+    ═══════════════════════════════════════════════
   -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600&family=Tilt+Neon&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+
+  <!-- Responsive -->
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>PBS · Nam June Paik</title>
+
+
+  <!--
+    ═══════════════════════════════════════════════
+    TIPOGRAFÍAS
+    Cambiá estas URLs si querés otras fuentes.
+    ═══════════════════════════════════════════════
+  -->
+
+  <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+  <link rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600&family=Tilt+Neon&display=swap"
+        rel="stylesheet">
+
+
+  <!-- CSS -->
+  <link rel="stylesheet"
+        href="styles.css">
+
 </head>
+
 <body>
 
-  <!--
-    ═══════════════════════════════════════════
-    IMAGEN DE FONDO
-    Apunta a data/fondo.png. Para cambiarla:
-    → en styles.css buscá #imagen-fondo y cambiá la URL
-    ═══════════════════════════════════════════
-  -->
-  <div id="imagen-fondo" aria-hidden="true"></div>
 
   <!--
-    OVERLAY DE SCANLINES (efecto CRT)
-    Solo decoración. Para quitarlo: eliminá este div
-    y el bloque #lineas-crt de styles.css
-
-     
+    ═══════════════════════════════════════════════
+    FONDO GENERAL DE TODA LA WEB
+    Cambiá la imagen desde acá.
+    ═══════════════════════════════════════════════
   -->
- <div id="lineas-crt" aria-hidden="true"></div>
+
+  <div id="imagen-fondo">
+
+    <img src="data/fondo.png"
+         alt="Fondo general">
+
+  </div>
+
+
+  <!-- Scanlines CRT -->
+  <div id="lineas-crt"></div>
+
 
 
   <main id="instalacion">
 
+
     <!--
-      ═══════════════════════════════════════════
-      PANTALLA DE INICIO
-      Lo primero que ve el usuario.
-      ═══════════════════════════════════════════
+      ═══════════════════════════════════════════════
+      PANTALLA INICIAL
+      Todo editable directamente desde HTML.
+      ═══════════════════════════════════════════════
     -->
-    <section id="pantalla-inicio" aria-labelledby="titulo-obra">
-      <header class="intro-contenido">
 
-        <!-- Título principal de la obra -->
-        <h1 class="intro-titulo" id="titulo-obra">PBS</h1>
+    <section id="pantalla-inicio">
 
-        <!-- Fechas del período histórico que abarca la obra -->
-        <p class="intro-fechas">(1963 – 2000)</p>
+      <div class="intro-contenido">
 
-        <!-- Artista y año de instalación -->
-        <p class="intro-artista">Nam June Paik · 1993</p>
+        <!-- Título principal -->
+        <h1 class="intro-titulo">
+          PBS
+        </h1>
 
-        <!-- Botón de entrada. El onclick llama a entrarAlMural() en main.js -->
-        <button class="boton-sintonizar" type="button" onclick="entrarAlMural()">
+        <!-- Fechas -->
+        <p class="intro-fechas">
+          (1963 – 2000)
+        </p>
+
+        <!-- Autor -->
+        <p class="intro-artista">
+          Nam June Paik · 1993
+        </p>
+
+        <!-- Botón -->
+        <button class="boton-sintonizar"
+                onclick="entrarAlMural()">
+
           Sintonizá
+
         </button>
 
-      </header>
+      </div>
+
     </section>
+
 
 
     <!--
-      ═══════════════════════════════════════════
-      MURAL DE MONITORES
-      El encabezado y la grilla son visibles
-      cuando el usuario hace click en "Sintonizá".
-      Las tarjetas de monitor se generan
-      automáticamente desde los canales de abajo.
-      ═══════════════════════════════════════════
+      ═══════════════════════════════════════════════
+      MURAL DE TARJETAS
+      TODO editable desde HTML.
+      ═══════════════════════════════════════════════
     -->
-    <section id="mural-monitores" aria-labelledby="mural-titulo">
+
+    <section id="mural-monitores">
+
+
+      <!-- Encabezado -->
       <header class="mural-encabezado">
-        <p id="mural-titulo">PBS (1963–2000) · NAM JUNE PAIK</p>
-        <p id="mural-ayuda">Elegí una pantalla para ver...</p>
+
+        <p id="mural-titulo">
+          PBS (1963–2000)
+        </p>
+
+        <p id="mural-ayuda">
+          Elegí una pantalla para ver más...
+        </p>
+
       </header>
 
-      <!-- Las tarjetas de monitor se insertan aquí por main.js -->
-      <div id="grilla-canales" aria-label="Canales de la obra"></div>
+
+
+      <!--
+        ═══════════════════════════════════════════════
+        GRILLA DE TARJETAS
+        Cada botón es una tarjeta editable.
+        ═══════════════════════════════════════════════
+      -->
+
+      <div id="grilla-canales">
+
+
+        <!--
+          ═══════════════════════════════════════════
+          TARJETA 1
+          abrirCanal(0) = abre el CANAL 1 de abajo
+          ═══════════════════════════════════════════
+        -->
+
+        <button class="monitor"
+                onclick="abrirCanal(0)">
+
+          <span class="pantalla-monitor">
+
+
+            <!--
+              FOTO DE LA TARJETA
+              Cambiá src por cualquier imagen.
+            -->
+
+            <img class="monitor-imagen"
+                 src="data/img5.png"
+                 alt="Ficha técnica"
+                 style="object-position:center center">
+
+
+            <!-- TEXTO -->
+            <span class="contenido-monitor">
+
+              <span class="monitor-etiqueta">
+                Ficha técnica
+              </span>
+
+              <span class="monitor-resumen">
+                Un primer abordaje a la Instalación.
+              </span>
+
+            </span>
+
+          </span>
+
+        </button>
+
+
+
+        <!-- TARJETA 2 -->
+
+        <button class="monitor"
+                onclick="abrirCanal(1)">
+
+          <span class="pantalla-monitor">
+
+            <img class="monitor-imagen"
+                 src="data/img6.jpg"
+                 alt="Vista general"
+                 style="object-position:center center">
+
+            <span class="contenido-monitor">
+
+              <span class="monitor-etiqueta">
+                Sobre el Artista:
+              </span>
+
+              <span class="monitor-resumen">
+                Conoscamos un poco más a Nam June Paik.
+              </span>
+
+            </span>
+
+          </span>
+
+        </button>
+
+
+
+        <!-- TARJETA 3 -->
+
+        <button class="monitor"
+                onclick="abrirCanal(2)">
+
+          <span class="pantalla-monitor">
+
+            <img class="monitor-imagen"
+                 src="data/img4.png"
+                 alt="Escrituras"
+                 style="object-position:72% 22%">
+
+            <span class="contenido-monitor">
+
+              <span class="monitor-etiqueta">
+                El Contexto
+              </span>
+
+              <span class="monitor-resumen">
+                El dónde, el cuándo y el porqué sí.
+              </span>
+
+            </span>
+
+          </span>
+
+        </button>
+
+        
+        <!-- TARJETA 4 -->
+
+        <button class="monitor"
+                onclick="abrirCanal(3)">
+
+          <span class="pantalla-monitor">
+
+            <img class="monitor-imagen"
+                 src="data/img1.jpg"
+                 alt="Vista general"
+                 style="object-position:center center">
+
+            <span class="contenido-monitor">
+
+              <span class="monitor-etiqueta">
+                La Técnica:
+              </span>
+
+              <span class="monitor-resumen">
+                 El porque y el como tienen todo que ver.
+              </span>
+
+            </span>
+
+          </span>
+
+        </button>
+
+        
+        <!-- TARJETA 5 -->
+
+        <button class="monitor"
+                onclick="abrirCanal(4)">
+
+          <span class="pantalla-monitor">
+
+            <img class="monitor-imagen"
+                 src="data/img2.jpg"
+                 alt="Vista general"
+                 style="object-position:center center">
+
+            <span class="contenido-monitor">
+
+              <span class="monitor-etiqueta">
+                Según los autores:
+              </span>
+
+              <span class="monitor-resumen">
+                Que nos dirían Manovich, Murray y Foglia-Efrain.
+              </span>
+
+            </span>
+
+          </span>
+
+        </button>
+
+
+        
+        <!-- TARJETA 6 -->
+
+        <button class="monitor"
+                onclick="abrirCanal(5)">
+
+          <span class="pantalla-monitor">
+
+            <img class="monitor-imagen"
+                 src="data/img3.png"
+                 alt="Vista general"
+                 style="object-position:center center">
+
+            <span class="contenido-monitor">
+
+              <span class="monitor-etiqueta">
+                Obra desarmada:
+              </span>
+
+              <span class="monitor-resumen">
+                
+              </span>Volvemos a mirar la obra. Ahora en profundidad.
+
+            </span>
+
+          </span>
+
+        </button>
+
+
+
+
+
+
+      </div>
+
     </section>
 
-  </main><!-- /#instalacion -->
+  </main>
+
+
 
 
   <!--
-    ═══════════════════════════════════════════════════════════════
+    ═══════════════════════════════════════════════
     VISOR EXPANDIDO
-    Se abre al hacer click en un monitor.
-    El contenido proviene de los canales de abajo.
-    No hace falta tocar este bloque para editar contenido.
-    ═══════════════════════════════════════════════════════════════
+    NO necesitás editar esto normalmente.
+    ═══════════════════════════════════════════════
   -->
-  <aside id="visor-canal" role="dialog" aria-modal="true"
-         aria-hidden="true" aria-labelledby="visor-canal-id">
+
+  <aside id="visor-canal">
+
     <article class="visor-marco">
 
-      <!-- Barra superior del visor (botones de control) -->
+
+      <!-- Barra superior -->
       <header class="visor-barra">
-        <button class="control-visor cerrar" type="button"
-                onclick="cerrarVisor()" aria-label="Cerrar"></button>
-        <p class="visor-canal-id" id="visor-canal-id">—</p>
-        <nav class="navegacion-canales" aria-label="Navegación de canales">
-          <button class="boton-navegacion" type="button"
-                  onclick="navegarCanal(-1)" aria-label="Canal anterior">Anterior</button>
-          <button class="boton-navegacion" type="button"
-                  onclick="navegarCanal(1)"  aria-label="Canal siguiente">Siguiente</button>
+
+        <!-- Cerrar -->
+        <button class="control-visor cerrar"
+                onclick="cerrarVisor()">
+        </button>
+
+
+        <!-- Título dinámico -->
+        <p class="visor-canal-id"
+           id="visor-canal-id">
+        </p>
+
+
+        <!-- Navegación -->
+        <nav class="navegacion-canales">
+
+          <button class="boton-navegacion"
+                  onclick="navegarCanal(-1)">
+
+            Anterior
+
+          </button>
+
+          <button class="boton-navegacion"
+                  onclick="navegarCanal(1)">
+
+            Siguiente
+
+          </button>
+
         </nav>
+
       </header>
 
-      <!-- Área scrolleable donde se muestra el contenido del canal -->
-      <section class="visor-pantalla" tabindex="0">
+
+
+      <!-- Contenido expandido -->
+      <section class="visor-pantalla">
+
         <div id="contenido-canal"></div>
+
       </section>
 
     </article>
+
   </aside>
 
 
-  <!-- ═══════════════════════════════════════════════════════════════
-       CANALES — TODO EL CONTENIDO EDITORIAL ESTÁ AQUÍ
-       
-       Cada <article class="canal"> es un canal / pantalla del mural.
-       
-       CÓMO EDITARLOS:
-       → Cambiá el texto dentro de las etiquetas HTML normalmente.
-       → data-etiqueta  = título que aparece en la tarjeta del monitor
-       → data-resumen   = texto de preview en la tarjeta del monitor
-       → data-visual    = "si" para mostrar la foto de fondo en la tarjeta
-       → data-posicion  = dónde recorta la imagen (ej: "center center", "72% 22%")
-       
-       PARA AGREGAR UN CANAL NUEVO:
-       → Copiá uno de los bloques de abajo y pegalo al final, antes del </div>
-       → Cambiá el número en data-numero y el contenido.
-       
-       PARA QUITAR UN CANAL:
-       → Borrá el bloque completo desde <article> hasta </article>.
-       ═══════════════════════════════════════════════════════════════ -->
+
+
+
+  <!--
+    ═══════════════════════════════════════════════
+    CONTENIDO EXPANDIDO DE LOS CANALES
+     ═══════════════════════════════════════════════
+  -->
+
   <div id="canales" hidden>
 
 
-    <!-- ─────────────────────────────
-         CANAL 01 · Ficha técnica
-    ───────────────────────────────── -->
-    <article class="canal"
-             data-numero="01"
-             data-etiqueta="Ficha técnica"
-             data-resumen="Datos principales de PBS y su contexto material.">
 
-      <p class="canal-volanta">Obra analizada</p>
-      <h2 class="canal-titulo">PBS (1963–2000)</h2>
+    <!--
+      ═══════════════════════════════════════════
+      CANAL 1
+      ═══════════════════════════════════════════
+    -->
+
+    <article class="canal">
+
+      <p class="canal-volanta">
+        Título de la Obra:
+      </p>
+
+      <h2 class="canal-titulo">
+        PBS (1963–2000)
+      </h2>
+
 
       <div class="layout-dos-columnas">
 
-        <!-- Tabla de datos técnicos -->
+
+        <!-- Datos -->
         <dl class="grilla-datos">
 
           <div>
-            <dt>Artista</dt>
-            <dd>Nam June Paik</dd>
+            <dt>Año</dt>
+            <dd>Fue comisionada en 1992, pero se terminó de Instalar en 1993.</dd>
+          </div>
+
+
+          <div>
+            <dt>Ubicación</dt>
+            <dd>Edificio de la New Jersey Network (NJN), Trenton Nueva Jersey</dd>
           </div>
 
           <div>
@@ -173,253 +461,267 @@
 
           <div>
             <dt>Tipo</dt>
-            <dd>Instalación pública</dd>
-          </div>
-
-          <div>
-            <dt>Ubicación</dt>
-            <dd>NJN Building, Trenton</dd>
+            <dd>Desde la perspectiva de los autores vistos hasta ahora podemos decir que se trata de una obra espacial y escenica, ya que se integra directamente en la arquitectura para transformar el espacio físico.</dd>
           </div>
 
           <div>
             <dt>Materiales</dt>
-            <dd>Monitores, video y neón</dd>
+            <dd>La obra se compone de 2 inmensos paneles de pared de 20 por 12 pies, compuestos por luces de Neón y 52 monitores de televisión de 20 pulgadas.</dd>
           </div>
 
           <div>
-            <dt>Escala</dt>
-            <dd>2 paneles / 52 monitores</dd>
+            <dt>A primera vista:</dt>
+            <dd>La instalación se nos presenta como un inmeso muro tecnológico parpadeante. Es un collage de ritmos acelerados, brillos y colores, donde las múltiples pantallas de tv reproducen constantemente videos dentro de un marco de signos y jeroglifos de luces de neón.</dd>
           </div>
 
         </dl>
 
-        <!-- Imagen de la obra -->
+
+
+        <!-- Imagen -->
         <figure class="figura-obra">
-          <img src="data/fondo.png" alt="Vista general de PBS"
-               style="object-position: center center">
+
+          <img src="data/img5.png"
+               alt="Vista general"
+               style="object-position:center center">
+
           <figcaption>
-            <strong>Vista general</strong>
-            <span>La imagen de fondo funciona como referencia visual principal.</span>
+
+            <strong>
+            La vemos de a poco.
+            </strong>
+
+            <span>
+              La obra es extensa y dificil de fotografiar en toda su extensión.
+            </span>
+
           </figcaption>
+
         </figure>
 
-      </div><!-- /.layout-dos-columnas -->
-    </article>
-
-
-    <!-- ─────────────────────────────
-         CANAL 02 · La obra
-    ───────────────────────────────── -->
-    <article class="canal"
-             data-numero="02"
-             data-etiqueta="La obra"
-             data-resumen="Televisores, neón y escritura como una sola arquitectura visual.">
-
-      <p class="canal-volanta">Síntesis</p>
-      <h2 class="canal-titulo">Un mural de señales</h2>
-
-      <div class="texto-canal texto-breve">
-        <p>
-          <em>PBS</em> reúne televisores, luces de neón y signos de distintas
-          escrituras en una estructura mural. La obra convierte el lenguaje de
-          la televisión pública en una composición física, visible desde el
-          espacio arquitectónico.
-        </p>
-        <p>
-          La lógica central es modular: cada monitor funciona como una unidad
-          de señal, mientras el neón arma una capa de escritura luminosa
-          alrededor de las pantallas.
-        </p>
       </div>
 
-      <figure class="figura-obra">
-        <img src="data/fondo.png" alt="Pantallas y neón"
-             style="object-position: center center">
-        <figcaption>
-          <strong>Pantallas y neón</strong>
-          <span>La composición mezcla imagen electrónica, signos y arquitectura.</span>
-        </figcaption>
-      </figure>
-
     </article>
 
 
-    <!-- ─────────────────────────────
-         CANAL 03 · Vista general
-         data-visual="si" → muestra la foto en la tarjeta del monitor
-         data-posicion    → recorte de la imagen en la tarjeta
-    ───────────────────────────────── -->
-    <article class="canal"
-             data-numero="03"
-             data-etiqueta="Vista general"
-             data-resumen="Una mirada amplia para leer la composición completa."
-             data-visual="si"
-             data-posicion="center center">
-
-      <p class="canal-volanta">Imagen de la obra</p>
-      <h2 class="canal-titulo">Vista general</h2>
-
-      <figure class="figura-obra">
-        <img src="data/fondo.png" alt="Vista general de la instalación"
-             style="object-position: center center">
-        <figcaption>
-          <strong>Vista general</strong>
-          <span>
-            El conjunto se entiende como una fachada interior: pantallas
-            encastradas, franjas de neón y signos distribuidos por bloques.
-          </span>
-        </figcaption>
-      </figure>
-
-    </article>
-
-
-    <!-- ─────────────────────────────
-         CANAL 04 · Escrituras
-    ───────────────────────────────── -->
-    <article class="canal"
-             data-numero="04"
-             data-etiqueta="Escrituras"
-             data-resumen="El neón funciona como alfabeto, no solo como decoración."
-             data-visual="si"
-             data-posicion="72% 22%">
-
-      <p class="canal-volanta">Imagen de la obra</p>
-      <h2 class="canal-titulo">Escrituras de luz</h2>
-
-      <figure class="figura-obra">
-        <img src="data/fondo.png" alt="Escrituras de neón"
-             style="object-position: 72% 22%">
-        <figcaption>
-          <strong>Escrituras de luz</strong>
-          <span>
-            Los signos aparecen como una genealogía visual de la comunicación:
-            símbolos antiguos, alfabetos y marcas inventadas por la propia obra.
-          </span>
-        </figcaption>
-      </figure>
-
-    </article>
-
-
-    <!-- ─────────────────────────────
-         CANAL 05 · Monitores
-    ───────────────────────────────── -->
-    <article class="canal"
-             data-numero="05"
-             data-etiqueta="Monitores"
-             data-resumen="Las pantallas repiten, interrumpen y fragmentan la señal."
-             data-visual="si"
-             data-posicion="50% 48%">
-
-      <p class="canal-volanta">Imagen de la obra</p>
-      <h2 class="canal-titulo">Monitores como módulos</h2>
-
-      <figure class="figura-obra">
-        <img src="data/fondo.png" alt="Monitores de la instalación"
-             style="object-position: 50% 48%">
-        <figcaption>
-          <strong>Monitores como módulos</strong>
-          <span>
-            Los televisores no son ventanas aisladas: se vuelven piezas de
-            una matriz mayor, casi como píxeles dentro de una escultura.
-          </span>
-        </figcaption>
-      </figure>
-
-    </article>
-
-
-    <!-- ─────────────────────────────
-         CANAL 06 · Lectura breve
-    ───────────────────────────────── -->
-    <article class="canal"
-             data-numero="06"
-             data-etiqueta="Lectura breve"
-             data-resumen="Tres ideas para conectar la obra con el marco teórico.">
-
-      <p class="canal-volanta">Marco conceptual reducido</p>
-      <h2 class="canal-titulo">Tres claves</h2>
-
-      <!-- Grilla de tres tarjetas conceptuales -->
-      <ul class="claves" role="list">
-
-        <li>
-          <span>01</span>
-          <h3>Modularidad</h3>
-          <p>
-            Los monitores operan como unidades independientes dentro
-            de una estructura común.
-          </p>
-        </li>
-
-        <li>
-          <span>02</span>
-          <h3>Espacio</h3>
-          <p>
-            La obra no se mira desde un único punto: se recorre
-            con el cuerpo y con la mirada.
-          </p>
-        </li>
-
-        <li>
-          <span>03</span>
-          <h3>Traducción</h3>
-          <p>
-            Televisión, escritura y neón se traducen entre sí
-            como capas de comunicación.
-          </p>
-        </li>
-
-      </ul>
-
-      <figure class="figura-obra">
-        <img src="data/fondo.png" alt="Detalle del sistema visual"
-             style="object-position: 44% 42%">
-        <figcaption>
-          <strong>Detalle del sistema visual</strong>
-          <span>
-            La teoría queda anclada en lo que se ve:
-            señal, módulo, escritura y recorrido.
-          </span>
-        </figcaption>
-      </figure>
-
-    </article>
 
 
     <!--
-      ══════════════════════════════════════════════
-      PARA AGREGAR UN CANAL NUEVO:
-      Copiá el bloque de abajo (desde <article> hasta </article>),
-      pegalo aquí, y editá el contenido.
-      ══════════════════════════════════════════════
-
-    <article class="canal"
-             data-numero="07"
-             data-etiqueta="Nombre del canal"
-             data-resumen="Texto corto visible en la tarjeta del monitor.">
-
-      <p class="canal-volanta">Subtítulo pequeño</p>
-      <h2 class="canal-titulo">Título del canal</h2>
-
-      <div class="texto-canal texto-breve">
-        <p>Tu texto acá.</p>
-        <p>Podés tener varios párrafos.</p>
-      </div>
-
-    </article>
+      ═══════════════════════════════════════════
+      CANAL 2
+      ═══════════════════════════════════════════
     -->
 
+    <article class="canal">
 
-  </div><!-- /#canales -->
+      <p class="canal-volanta">
+        Autor
+      </p>
+
+      <h2 class="canal-titulo">
+        Nam June Paik
+      </h2>
 
 
-  <!--
-    SCRIPTS
-    main.js lee los canales del HTML y maneja la interacción.
-    No necesitás tocar este archivo para editar contenido.
-  -->
+      <figure class="figura-obra">
+
+        <img src="data/img6.jpg"
+             alt="Nam June Paik"
+             style="object-position:center center">
+
+        <figcaption>
+
+          <strong>
+            Quién fue Nam June Paik?
+          </strong>
+
+          <span>
+            Nam June Paik Nació en una familia acomodada en Seúl, Corea, en 1932, pero tuvo que huir junto a su familia a causa de la guerra en 1950, instalándose en Japón y luego en Alemania. 
+            Inició su formación en Japón, donde estudió Música e Historia del Arte, graduándose en la Universidad de Tokio en 1956 para luego profundizar en Teoría de la Música en Múnich. 
+              Un encuentro clave en su vida fue conocer al compositor John Cage, quien influyó profundamente en su obra, llevándolo a participar activamente en Fluxus y en el arte de los happenings.
+            Paik es considerado universalmente como el "George Washington del Videoarte" entre otras cosas porque fue pionero en sacar al televisor de su rol de electrodoméstico pasivo para revolucionar su uso como medio de expresión artística. Su visión era profundamente utópica y democrática: creía que el videoarte y la televisión debían servir para democratizar la información, trascender las barreras culturales y lingüísticas, y conectar a las personas en todo el mundo.
+          </span>
+
+        </figcaption>
+
+      </figure>
+
+    </article>
+
+
+
+
+    <!--
+      ═══════════════════════════════════════════
+      CANAL 3
+      ═══════════════════════════════════════════
+    -->
+
+    <article class="canal">
+
+      <p class="canal-volanta">
+        El contexto:
+      </p>
+
+      <h2 class="canal-titulo">
+        EL dónde, el cuando y el porqué sí.
+      </h2>
+
+
+      <figure class="figura-obra">
+
+        <img src="data/img4.png"
+             alt="Escrituras de neón"
+             style="object-position:72% 22%">
+
+        <figcaption>
+
+          <strong>
+            EL contexto "es" la obra.
+          </strong>
+
+          <span>
+            La ubicación de PBS (1963-2000) es un componente vital del significado de la obra. El edificio NJN albergaba las estaciones estatales de la PBS (televisión pública) y la NPR (radio pública) en Trenton, Nueva Jersey. Trenton ("Trenton hace, el mundo toma") fue una histórica potencia manufacturera, pero su contribución más grande a esta obra ocurrió en 1953. En laboratorios cercanos a la ciudad (la Corporación Sarnoff y RCA Laboratories), el ingeniero Vladimir Zworykin y su equipo desarrollaron el tubo de rayos catódicos (CRT) en color y el estándar NTSC, sentando las bases de la televisión en color moderna. Paik instaló esta obra aquí precisamente para rendir homenaje al lugar de nacimiento de la tecnología que él mismo utiliza como lienzo.
+          </span>
+
+        </figcaption>
+
+      </figure>
+
+    </article>
+
+
+     <!--
+      ═══════════════════════════════════════════
+      CANAL 4
+      ═══════════════════════════════════════════
+    -->
+
+    <article class="canal">
+
+      <p class="canal-volanta">
+        La Técnica
+      </p>
+
+      <h2 class="canal-titulo">
+       El porqué y el cómo tienen todo que ver...
+      </h2>
+
+
+      <figure class="figura-obra">
+
+        <img src="data/img1.jpg"
+             alt="PBS"
+             style="object-position:center center">
+
+        <figcaption>
+
+          <strong>
+            Arte electrónico, Videoarte, o los dos...
+          </strong>
+
+          <span>
+            Técnicamente, la obra es un híbrido audiovisual dividido en dos lenguajes superpuestos: el video y el neón: Se compone principalmente de los siguientes elementos: Los monitores o TVs (Video): Las 52 pantallas emiten un flujo frenético y nostálgico: Muestran "patrones danzantes" que mezclan retrospectivas de transmisiones históricas de la televisión pública (PBS) con fragmentos de videoarte vanguardista donde colaboran figuras como John Cage, Joseph Beuys, David Bowie y Merce Cunningham. Curiosidad: la obra intercala este arte elevado con los clásicos segmentos de recaudación de fondos de la PBS, donde presentadores piden donaciones de $240 dólares a cambio de paquetes educativos para niños.
+            Y por otro lado, los Neones (Texto y Esquemas): Rodeando las pantallas, los tubos de neón dibujan símbolos lingüísticos antiguos: pictogramas sumerios, jeroglíficos, y antiguos caracteres coreanos y Brahmi. Simultáneamente, en el otro panel, otros neones trazan diagramas técnicos de un tubo de rayos catódicos, mostrando cómo los haces de electrones (rojo, verde y azul) se manipulan para crear imágenes.
+.
+          </span>
+
+        </figcaption>
+
+      </figure>
+
+    </article>
+
+
+     <!--
+      ═══════════════════════════════════════════
+      CANAL 5
+      ═══════════════════════════════════════════
+    -->
+
+    <article class="canal">
+
+      <p class="canal-volanta">
+        Según los autores
+      </p>
+
+      <h2 class="canal-titulo">
+        Qué nos dirían Manovich, Murray y Foglia-Efraín
+      </h2>
+
+
+      <figure class="figura-obra">
+
+        <img src="data/img2.jpg"
+             alt="PBS"
+             style="object-position:center center">
+
+        <figcaption>
+
+          <strong>
+            Desde cada punto de vista:
+          </strong>
+
+          <span>
+          Lev Manovich vería en esta instalación la encarnación de sus principios de los nuevos medios (la lógica del "ordenador"): La Modularidad es evidente, las 52 pantallas son módulos independientes que se agrupan en un objeto mayor sin perder su identidad. Por otro lado, en la obra también existe Variabilidad: no es una cinta lineal estática, sino una remezcla líquida e infinita de contenidos. Pero lo más importante es la Transcodificación Cultural: Paik pone en la misma jerarquía a la "capa cultural" (jeroglíficos, arte de vanguardia) y la "capa informática/técnica" (el diagrama del tubo de rayos catódicos). La obra nos muestra cómo la lógica electrónica organiza nuestra cultura. 
+          Para Janet H. Murray, la obra explota dos propiedades clave(Propiedades de los entornos digitales). Primero, la Propiedad Espacial: Paik toma el tiempo lineal y efímero de las transmisiones televisivas y lo despliega en un espacio navegable, una colosal cuadrícula tridimensional de 20x12 pies. Segundo, la Propiedad Enciclopédica: los 52 monitores funcionan en conjunto como una inmensa base de datos o biblioteca global que guarda la memoria de décadas de la televisión pública y del videoarte contemporáneo. 
+          Efraín Foglia situaría a Paik claramente como un pionero que extrae el arte del "cubo blanco" elitista de los museos para insertarlo en la trama urbana. Al ser parte del movimiento Fluxus (aunque no en esta obra, fue la fase 1 del arte participativo propuesto por Foglia), Paik rompe la barrera del espectador pasivo. No sería arte participativo propiamente dicho, pero la obra vive en un edificio público, accesible a la ciudadanía. De hecho, los neones brillan a través de las ventanas hacia la calle las 24 horas del día, emancipando la parcela del arte y democratizando su acceso para cualquier transeúnte, sin importar el clima o la hora. La obra claramente trata de democratizar y comunicar.
+.
+          </span>
+
+        </figcaption>
+
+      </figure>
+
+    </article>
+
+
+     <!--
+      ═══════════════════════════════════════════
+      CANAL 6
+      ═══════════════════════════════════════════
+    -->
+
+    <article class="canal">
+
+      <p class="canal-volanta">
+        Desarme
+      </p>
+
+      <h2 class="canal-titulo">
+       Volver a mirar la obra.
+      </h2>
+
+
+      <figure class="figura-obra">
+
+        <img src="data/img3.png"
+             alt="PBS"
+             style="object-position:center center">
+
+        <figcaption>
+
+          <strong>
+            Qué nos quiso decir?
+          </strong>
+
+          <span>
+            PBS (1963-2000) se revela como un manifiesto enciclopédico sobre la evolución de la comunicación humana, y deja de ser una simple acumulación de televisores brillantes. Paik "hackea" el electrodoméstico hegemónico del siglo XX. La televisión tradicional es unidireccional y lineal. Al modularizar 52 pantallas y espacializarlas, Paik anticipa la interfaz de las bases de datos informáticas de las que habla Manovich. Convierte el flujo temporal dictado por las corporaciones mediáticas en un mosaico espacial que el espectador puede navegar libremente. El contraste de los neones tiene que ver con la filosofía de la obra. Al dibujar un antiguo pictograma sumerio junto al diagrama técnico de un tubo de rayos catódicos, Paik traza una línea evolutiva ininterrumpida: Nos dice que el desarrollo de la televisión en Trenton no es más que el paso tecnológico siguiente a la invención de la escritura en Mesopotamia. Ambas son herramientas diseñadas para vencer al tiempo y al espacio, uniendo a la humanidad. La fragilidad del espacio público y la cultura: Un aspecto fascinante de la obra es la inclusión irónica de las campañas de recaudación de fondos (pledge drives) de la PBS. Paik intercala la vanguardia artística con presentadores pidiendo dinero para sobrevivir. Podríamos decir que eso tiene mucho que ver con lo que pasa ahora con el mercantilismo del arte, y con la preocupación de Foglia sobre la fragilidad de las infraestructuras de comunicación ciudadana frente al poder económico. En 2011, cuando el Estado retiró los fondos públicos, el edificio cerró, y la obra se apagó. Que una obra diseñada para democratizar el arte se apague por recortes políticos demuestra que la existencia del arte y la comunicación en el espacio público está siempre en disputa. En ese sentido, la obra plantea un interesante debate sobre la variabilidad y la preservación del arte mediático. Cuando la instalación fue restaurada, los viejos y pesados monitores CRT (cuya tecnología originaria de Trenton es homenajeada en los neones) fueron reemplazados por pantallas planas modernas para asegurar la longevidad de la obra. Esto nos obliga a preguntarnos: si cambiamos el hardware que la obra misma celebra, ¿sigue siendo la misma obra? PBS (1963-2000) es un ecosistema vivo que nos demuestra que, al igual que los lenguajes antiguos, la tecnología se reescribe constantemente, pero el deseo humano de comunicarse permanece inalterable.
+          </span>
+
+        </figcaption>
+
+      </figure>
+
+    </article>
+
+
+
+  </div>
+
+
+
+  <!-- JS -->
   <script src="main.js"></script>
 
 </body>

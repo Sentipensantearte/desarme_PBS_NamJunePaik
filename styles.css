@@ -1,57 +1,53 @@
 /*
-  ══════════════════════════════════════════════════════════════
-  STYLES.CSS — PBS (1963–2000) · Nam June Paik
-  Instalación web interactiva · Arte Digital Aplicado 2026
-
-  ÍNDICE:
-  1.  Variables (colores, fuentes)
-  2.  Reset y base
-  3.  Fondo e imagen de la obra
-  4.  Overlay de scanlines (efecto CRT)
-  5.  Pantalla de inicio
-  6.  Mural de monitores
-  7.  Tarjeta de monitor individual
-  8.  Visor expandido (lightbox)
-  9.  Tipografía de contenido de canales
-  10. Componentes de contenido (tablas, figuras, claves)
-  11. Adaptación a pantallas chicas (responsive)
-  ══════════════════════════════════════════════════════════════
+  ═══════════════════════════════════════════════
+  VARIABLES GENERALES
+  Cambiá colores y tipografías acá.
+  ═══════════════════════════════════════════════
 */
 
-
-/* ──────────────────────────────────────────────────────────────
-   1. VARIABLES
-   Para cambiar la paleta entera, solo modificá estos valores.
-   ────────────────────────────────────────────────────────────── */
 :root {
-  /* Colores de fondo */
-  --fondo:        #060707;                    /* negro base de toda la página */
-  --panel:        #111517;                    /* fondo de paneles sólidos */
-  --panel-suave:  rgba(17, 21, 23, .82);      /* fondo de paneles semi-transparentes */
 
-  /* Texto */
-  --texto:        #e5eee4;                    /* texto principal */
-  --texto-medio:  rgba(229, 238, 228, .72);   /* texto secundario */
-  --texto-suave:  rgba(229, 238, 228, .48);   /* texto terciario / etiquetas */
+  --fondo: #060707;
 
-  /* Bordes y líneas */
-  --linea:        rgba(229, 238, 228, .16);
+  --panel: #111517;
 
-  /* Colores de acento */
-  --verde:        #39e58a;   /* resaltados, botones activos */
-  --ambar:        #ffb23e;   /* números, fechas */
-  --azul:         #39a9ff;   /* links (disponible para uso) */
-  --rojo:         #ff4b3c;   /* botón de cerrar del visor */
+  --panel-suave: rgba(17, 21, 23, .82);
 
-  /* Tipografías (coincidir con los @import en index.html) */
-  --fuente-ui:    'Chakra Petch', 'Segoe UI', sans-serif;  /* interfaz general */
-  --fuente-neon:  'Tilt Neon', 'Chakra Petch', sans-serif; /* títulos / neón */
+  --texto: #e5eee4;
+
+  --texto-medio: rgba(229, 238, 228, .72);
+
+  --texto-suave: rgba(229, 238, 228, .48);
+
+  --linea: rgba(229, 238, 228, .16);
+
+  --verde: #39e58a;
+
+  --ambar: #ffb23e;
+
+  --rojo: #ff4b3c;
+
+
+  /*
+    Tipografías
+  */
+
+  --fuente-ui:
+    'Chakra Petch',
+    sans-serif;
+
+  --fuente-neon:
+    'Tilt Neon',
+    sans-serif;
 }
 
 
-/* ──────────────────────────────────────────────────────────────
-   2. RESET Y BASE
-   ────────────────────────────────────────────────────────────── */
+
+
+/*
+  RESET
+*/
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -64,613 +60,755 @@ body {
 }
 
 body {
-  overflow: hidden;         /* sin scroll en el cuerpo; cada sección maneja su propio scroll */
+
+  overflow: hidden;
+
   background: var(--fondo);
+
   color: var(--texto);
+
   font-family: var(--fuente-ui);
 }
 
+
+
+
+/*
+  BOTONES
+*/
+
 button {
-  color: inherit;
-  font: inherit;
-  background: none;
+
   border: none;
+
+  background: none;
+
+  color: inherit;
+
+  font: inherit;
+
   cursor: pointer;
 }
 
 
-/* ──────────────────────────────────────────────────────────────
-   3. FONDO E IMAGEN DE LA OBRA
-   La imagen ocupa toda la pantalla con un oscurecimiento encima.
 
-   PARA CAMBIAR LA IMAGEN:
-   Reemplazá 'data/fondo.png' por la ruta de tu imagen.
-   Ajustá el valor de brightness() para más o menos oscuridad:
-     .4 = muy oscuro · .64 = valor actual · .9 = casi original
-   ────────────────────────────────────────────────────────────── */
+
+
+/*
+  ═══════════════════════════════════════════════
+  FONDO GENERAL
+  ═══════════════════════════════════════════════
+*/
+
 #imagen-fondo {
+
   position: fixed;
-  inset: 0;                      /* cubre todo el viewport */
+
+  inset: 0;
+
   z-index: 0;
-  background-image: url('data/fondo.png');
-  background-position: center;
-  background-size: cover;
-  filter: brightness(.64) saturate(1.05);
+
+  overflow: hidden;
 }
 
-/* Degradado encima de la imagen para mejorar la legibilidad del texto */
+
+#imagen-fondo img {
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+
+  filter:
+    brightness(.64)
+    saturate(1.05);
+}
+
+
+
+
+/*
+  OSCURECIMIENTO
+*/
+
 #imagen-fondo::after {
+
   content: '';
+
   position: absolute;
+
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(6, 7, 7, .18),   /* arriba: casi transparente */
-    rgba(6, 7, 7, .84)    /* abajo: bastante oscuro */
-  );
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(6,7,7,.18),
+      rgba(6,7,7,.84)
+    );
 }
 
 
-/* ──────────────────────────────────────────────────────────────
-   4. OVERLAY DE SCANLINES (efecto CRT)
-   Líneas horizontales muy sutiles sobre toda la pantalla.
-   Para quitar el efecto: eliminá este bloque y el div #lineas-crt en el HTML.
-   Para aumentar la intensidad: subí el valor .08 en rgba(0,0,0,.08)
-   ────────────────────────────────────────────────────────────── */
+
+
+/*
+  CRT
+*/
+
 #lineas-crt {
+
   position: fixed;
+
   inset: 0;
+
   z-index: 30;
-  pointer-events: none;        /* no interfiere con clicks */
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0,
-    transparent 4px,
-    rgba(0, 0, 0, .08) 5px    /* ← subí esto para scanlines más visibles */
-  );
+
+  pointer-events: none;
+
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 4px,
+      rgba(0,0,0,.08) 5px
+    );
 }
 
 
-/* ──────────────────────────────────────────────────────────────
-   5. PANTALLA DE INICIO
-   Lo primero que ve el usuario al abrir la página.
-   ────────────────────────────────────────────────────────────── */
+
+
+
+/*
+  ═══════════════════════════════════════════════
+  CONTENEDOR PRINCIPAL
+  ═══════════════════════════════════════════════
+*/
+
 #instalacion {
+
   position: relative;
+
   z-index: 2;
+
   min-height: 100vh;
 }
 
+
+
+
+
+/*
+  ═══════════════════════════════════════════════
+  INTRO
+  ═══════════════════════════════════════════════
+*/
+
 #pantalla-inicio {
+
   position: fixed;
+
   inset: 0;
+
   z-index: 20;
+
   display: grid;
-  place-items: center;          /* centra todo el contenido vertical y horizontal */
+
+  place-items: center;
+
   padding: 2rem;
-  background: rgba(6, 7, 7, .36);
+
   text-align: center;
+
+  background: rgba(6,7,7,.36);
+
   transition: opacity .35s ease;
 }
 
-/* Clase que agrega main.js al hacer click en "Sintonizá" */
+
 #pantalla-inicio.oculta {
+
   opacity: 0;
-  pointer-events: none;         /* deja de recibir clicks mientras desaparece */
+
+  pointer-events: none;
 }
 
-/* Limita el ancho del bloque de texto central */
+
+
 .intro-contenido {
+
   width: min(42rem, 100%);
 }
 
-/* Título "PBS" */
+
+
 .intro-titulo {
-  color: var(--texto);
+
   font-family: var(--fuente-neon);
-  font-size: clamp(4rem, 15vw, 9rem);   /* tamaño responsive */
-  font-weight: 400;
+
+  font-size: clamp(4rem, 15vw, 9rem);
+
   line-height: .9;
-  text-shadow: 0 0 18px rgba(57, 229, 138, .34);  /* brillo verde */
+
+  font-weight: 400;
+
+  text-shadow:
+    0 0 18px rgba(57,229,138,.34);
 }
 
-/* "(1963–2000)" */
+
+
 .intro-fechas {
+
   color: var(--ambar);
+
   font-family: var(--fuente-neon);
+
   font-size: clamp(1.2rem, 4vw, 2rem);
+
   margin-top: .25rem;
 }
 
-/* "Nam June Paik · 1993" */
+
+
 .intro-artista {
+
   color: var(--texto-medio);
-  font-size: clamp(.85rem, 2vw, 1rem);
+
   margin-top: .65rem;
 }
 
-/* Botón "Sintonizá" */
+
+
+
+/*
+  BOTÓN
+*/
+
 .boton-sintonizar {
-  display: inline-block;
+
   margin-top: 2rem;
-  border: 1px solid var(--verde);
-  border-radius: 4px;
-  background: rgba(6, 7, 7, .45);
-  color: var(--verde);
-  cursor: pointer;
+
   padding: .75rem 1.45rem;
+
+  border: 1px solid var(--verde);
+
+  border-radius: 4px;
+
+  background: rgba(6,7,7,.45);
+
+  color: var(--verde);
+
   text-transform: uppercase;
-  letter-spacing: .05em;
 }
 
-.boton-sintonizar:hover,
-.boton-sintonizar:focus-visible {
+
+.boton-sintonizar:hover {
+
   background: var(--verde);
+
   color: var(--fondo);
-  outline: none;
 }
 
 
-/* ──────────────────────────────────────────────────────────────
-   6. MURAL DE MONITORES
-   Visible después de hacer click en "Sintonizá".
-   ────────────────────────────────────────────────────────────── */
+
+
+
+/*
+  ═══════════════════════════════════════════════
+  MURAL
+  ═══════════════════════════════════════════════
+*/
+
 #mural-monitores {
+
   position: fixed;
+
   inset: 0;
+
   z-index: 10;
-  display: none;               /* oculto hasta que main.js agrega .visible */
+
+  display: none;
+
   overflow-y: auto;
+
   padding: 2rem;
 }
 
-/* Clase que agrega main.js para mostrar el mural */
+
 #mural-monitores.visible {
+
   display: block;
 }
 
-/* Encabezado con el título y la instrucción de uso */
+
+
 .mural-encabezado {
+
   width: min(920px, 100%);
+
   margin: 0 auto 1.25rem;
+
   text-align: center;
 }
 
+
+
 #mural-titulo {
+
   font-family: var(--fuente-neon);
+
   font-size: clamp(1.1rem, 3vw, 1.8rem);
 }
 
+
+
 #mural-ayuda {
+
   color: var(--texto-medio);
-  font-size: .88rem;
+
   margin-top: .25rem;
 }
 
-/* Grilla de monitores: 3 columnas */
+
+
+
+/*
+  GRILLA
+*/
+
 #grilla-canales {
+
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));   /* ← cambiá 3 por 2 para dos columnas */
+
+  grid-template-columns:
+    repeat(3, minmax(0,1fr));
+
   gap: 1rem;
+
   width: min(920px, 100%);
+
   margin: 0 auto;
+
   padding-bottom: 2rem;
 }
 
 
-/* ──────────────────────────────────────────────────────────────
-   7. TARJETA DE MONITOR INDIVIDUAL
-   Cada botón del mural que representa un canal.
-   ────────────────────────────────────────────────────────────── */
+
+
+
+/*
+  ═══════════════════════════════════════════════
+  TARJETAS
+  ═══════════════════════════════════════════════
+*/
+
 .monitor {
-  border: 0;
-  border-radius: 7px;
-  background: var(--panel-suave);
-  cursor: pointer;
+
   overflow: hidden;
+
   padding: .55rem;
+
+  border-radius: 7px;
+
+  background: var(--panel-suave);
+
   text-align: left;
 }
 
-.monitor:hover,
-.monitor:focus-visible {
+
+.monitor:hover {
+
   outline: 1px solid var(--verde);
 }
 
-/* "Pantalla" interior del monitor (el rectángulo oscuro) */
+
+
 .pantalla-monitor {
+
   position: relative;
+
   display: block;
+
   min-height: 190px;
+
   overflow: hidden;
+
   border: 1px solid var(--linea);
+
   border-radius: 4px;
-  background: rgba(6, 7, 7, .82);
+
+  background: rgba(6,7,7,.82);
 }
 
-/* Imagen de fondo de la tarjeta (solo en monitores con data-visual="si") */
-.monitor-foto {
+
+
+
+/*
+  IMAGEN DE TARJETA
+  TOTALMENTE EDITABLE DESDE HTML
+*/
+
+.monitor-imagen {
+
   position: absolute;
+
   inset: 0;
-  background-image: url('data/fondo.png');
-  background-size: 230%;        /* ← cambiá para más/menos zoom de la imagen */
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+
   opacity: .84;
 }
 
-/* Degradado oscuro encima de la foto para que el texto sea legible */
-.monitor-visual .pantalla-monitor::after {
+
+
+
+/*
+  OSCURECIMIENTO
+*/
+
+.pantalla-monitor::after {
+
   content: '';
+
   position: absolute;
+
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, .1),
-    rgba(0, 0, 0, .72)
-  );
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,.1),
+      rgba(0,0,0,.72)
+    );
 }
 
-/* Bloque de texto dentro del monitor (número + etiqueta + resumen) */
+
+
+
+/*
+  TEXTO DE TARJETA
+*/
+
 .contenido-monitor {
+
   position: relative;
-  z-index: 1;
+
+  z-index: 2;
+
   display: flex;
+
   min-height: 190px;
+
   flex-direction: column;
-  justify-content: flex-end;    /* el texto se ubica en la parte baja */
+
+  justify-content: flex-end;
+
   padding: 1rem;
 }
 
-/* "Canal 01" */
-.monitor-canal {
-  color: var(--texto-suave);
-  font-size: .72rem;
-  text-transform: uppercase;
-}
 
-/* Nombre del canal (ej: "Ficha técnica") */
+
 .monitor-etiqueta {
-  display: block;
-  color: var(--texto);
+
   font-family: var(--fuente-neon);
+
   font-size: clamp(1.25rem, 2.8vw, 1.75rem);
-  margin-top: .2rem;
 }
 
-/* Texto de preview (se corta en 2 líneas) */
+
+
 .monitor-resumen {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  color: var(--texto-medio);
-  font-size: .86rem;
-  line-height: 1.45;
+
   margin-top: .45rem;
+
+  color: var(--texto-medio);
+
+  line-height: 1.45;
 }
 
 
-/* ──────────────────────────────────────────────────────────────
-   8. VISOR EXPANDIDO (lightbox)
-   Se abre al hacer click en un monitor.
-   ────────────────────────────────────────────────────────────── */
 
-/* Fondo oscuro semi-transparente */
+
+
+/*
+  ═══════════════════════════════════════════════
+  VISOR
+  ═══════════════════════════════════════════════
+*/
+
 #visor-canal {
+
   position: fixed;
+
   inset: 0;
+
   z-index: 40;
-  display: none;               /* oculto por defecto */
+
+  display: none;
+
   align-items: center;
+
   justify-content: center;
+
   padding: 1rem;
-  background: rgba(6, 7, 7, .78);
+
+  background: rgba(6,7,7,.78);
 }
 
-/* Clase que agrega main.js para mostrar el visor */
+
 #visor-canal.abierto {
+
   display: flex;
 }
 
-/* Marco del panel expandido */
+
+
+
 .visor-marco {
+
   display: flex;
-  width: min(920px, 96vw);     /* ← cambiá 920px para un panel más ancho o angosto */
-  max-height: 92vh;
+
   flex-direction: column;
+
+  width: min(920px, 96vw);
+
+  max-height: 92vh;
+
   overflow: hidden;
+
   border: 1px solid var(--linea);
+
   border-radius: 8px;
+
   background: var(--panel);
 }
 
-/* Barra superior del visor */
+
+
+
 .visor-barra {
+
   display: flex;
+
   align-items: center;
+
   gap: .75rem;
-  border-bottom: 1px solid var(--linea);
+
   padding: .65rem .8rem;
-  flex-shrink: 0;
+
+  border-bottom: 1px solid var(--linea);
 }
 
-/* Punto rojo de cerrar (estilo terminal) */
+
+
+
 .control-visor.cerrar {
+
   width: .8rem;
+
   height: .8rem;
-  flex: 0 0 auto;
+
   border-radius: 50%;
+
   background: var(--rojo);
 }
 
-/* Etiqueta del canal (centro de la barra) */
+
+
+
 .visor-canal-id {
+
   flex: 1;
-  color: var(--texto-medio);
-  font-size: .85rem;
+
   text-align: center;
+
+  color: var(--texto-medio);
 }
 
-/* Botones Anterior / Siguiente */
+
+
+
 .navegacion-canales {
+
   display: flex;
+
   gap: .4rem;
 }
 
+
+
 .boton-navegacion {
-  border: 1px solid var(--linea);
-  border-radius: 4px;
-  background: transparent;
-  color: var(--texto-medio);
-  cursor: pointer;
-  font-size: .78rem;
+
   padding: .35rem .6rem;
+
+  border: 1px solid var(--linea);
+
+  border-radius: 4px;
 }
 
-.boton-navegacion:hover,
-.boton-navegacion:focus-visible {
-  border-color: var(--verde);
-  color: var(--texto);
-  outline: none;
-}
 
-/* Área scrolleable donde se muestra el contenido del canal */
+
+
 .visor-pantalla {
+
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--linea) transparent;
 }
 
-/* Padding interior del contenido */
+
+
 #contenido-canal {
+
   padding: 1.5rem;
 }
 
 
-/* ──────────────────────────────────────────────────────────────
-   9. TIPOGRAFÍA DE CONTENIDO DE CANALES
-   Estas clases se usan en los <article class="canal"> del HTML.
-   ────────────────────────────────────────────────────────────── */
 
-/* Texto pequeño en mayúsculas (ej: "Obra analizada") */
+
+
+/*
+  ═══════════════════════════════════════════════
+  CONTENIDO EXPANDIDO
+  ═══════════════════════════════════════════════
+*/
+
 .canal-volanta {
+
   color: var(--texto-suave);
-  font-size: .78rem;
+
   text-transform: uppercase;
-  letter-spacing: .04em;
 }
 
-/* Título principal del canal */
+
+
 .canal-titulo {
-  color: var(--texto);
-  font-family: var(--fuente-neon);
-  font-size: clamp(2rem, 6vw, 3.6rem);
-  font-weight: 400;
-  line-height: 1;
+
   margin: .35rem 0 1rem;
+
+  font-family: var(--fuente-neon);
+
+  font-size: clamp(2rem, 6vw, 3.6rem);
+
+  line-height: 1;
 }
 
-/* Bloque de texto corrido */
+
+
 .texto-canal {
-  color: var(--texto-medio);
-  font-size: 1rem;
+
   line-height: 1.7;
 }
 
-/* Versión angosta (máx. 62 caracteres por línea) */
-.texto-breve {
-  max-width: 62ch;
-}
-
-.texto-canal p + p {
-  margin-top: .85rem;
-}
 
 
-/* ──────────────────────────────────────────────────────────────
-   10. COMPONENTES DE CONTENIDO
-   ────────────────────────────────────────────────────────────── */
-
-/* Layout de dos columnas (ficha técnica + imagen) */
 .layout-dos-columnas {
+
   display: grid;
-  grid-template-columns: .9fr 1.1fr;   /* columna izquierda un poco más angosta */
+
+  grid-template-columns: .9fr 1.1fr;
+
   gap: 1rem;
-  align-items: stretch;
 }
 
-/* Lista de definición con los datos técnicos */
+
+
+
 .grilla-datos {
+
   display: grid;
+
   gap: .6rem;
-  align-content: start;
 }
+
+
 
 .grilla-datos div {
+
   border-bottom: 1px solid var(--linea);
+
   padding-bottom: .55rem;
 }
 
-/* Término (dt): etiqueta como "Artista", "Año", etc. */
-.grilla-datos dt {
-  color: var(--texto-suave);
-  font-size: .72rem;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-}
 
-/* Definición (dd): el valor correspondiente */
-.grilla-datos dd {
-  color: var(--texto);
-  font-size: .98rem;
-  font-weight: 500;
-  margin-top: .15rem;
-  margin-left: 0;
-}
 
-/* Figura con imagen y pie de foto */
+
 .figura-obra {
+
   overflow: hidden;
+
   border: 1px solid var(--linea);
+
   border-radius: 6px;
+
   background: #000;
-  margin-top: 1rem;
 }
+
+
 
 .figura-obra img {
-  display: block;
+
   width: 100%;
-  height: min(58vh, 520px);    /* ← ajustá la altura máxima de la imagen */
+
+  height: min(58vh, 520px);
+
   object-fit: cover;
 }
 
-/* Pie de foto */
+
+
 .figura-obra figcaption {
-  display: grid;
-  gap: .15rem;
+
   padding: .85rem;
 }
 
-.figura-obra figcaption strong {
-  color: var(--texto);
-  font-weight: 500;
-  font-size: .95rem;
-}
-
-.figura-obra figcaption span {
-  color: var(--texto-medio);
-  font-size: .9rem;
-  line-height: 1.45;
-}
-
-/* Grilla de tres tarjetas conceptuales (las "claves") */
-.claves {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: .8rem;
-  margin-bottom: 1rem;
-  list-style: none;    /* quita los bullets de la lista */
-}
-
-.claves li {
-  border: 1px solid var(--linea);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, .03);
-  padding: 1rem;
-}
-
-/* Número de la clave (01, 02, 03) */
-.claves span {
-  color: var(--ambar);
-  font-size: .8rem;
-  display: block;
-}
-
-/* Título de la clave */
-.claves h3 {
-  color: var(--texto);
-  font-family: var(--fuente-neon);
-  font-size: 1.35rem;
-  font-weight: 400;
-  margin: .25rem 0 .35rem;
-}
-
-/* Descripción de la clave */
-.claves p {
-  color: var(--texto-medio);
-  font-size: .92rem;
-  line-height: 1.5;
-}
 
 
-/* ──────────────────────────────────────────────────────────────
-   11. RESPONSIVE — pantallas chicas
-   ────────────────────────────────────────────────────────────── */
 
-/* Tablets (~860px) */
+
+/*
+  ═══════════════════════════════════════════════
+  RESPONSIVE
+  ═══════════════════════════════════════════════
+*/
+
 @media (max-width: 860px) {
+
   body {
-    overflow: auto;              /* permite scroll en pantallas chicas */
+    overflow: auto;
   }
 
-  #mural-monitores {
-    padding: 1rem;
-  }
-
-  /* Pasa a 2 columnas */
   #grilla-canales {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    grid-template-columns: 1fr 1fr;
   }
 
-  /* Los layouts de dos columnas pasan a una sola */
-  .layout-dos-columnas,
-  .claves {
+  .layout-dos-columnas {
+
     grid-template-columns: 1fr;
-  }
-
-  .figura-obra img {
-    height: min(54vh, 420px);
   }
 }
 
-/* Celulares (~560px) */
+
+
 @media (max-width: 560px) {
-  #pantalla-inicio {
-    padding: 1.25rem;
-  }
 
-  #mural-monitores {
-    padding: .85rem;
-  }
-
-  /* Una sola columna */
   #grilla-canales {
+
     grid-template-columns: 1fr;
-    gap: .8rem;
   }
 
   .pantalla-monitor,
   .contenido-monitor {
+
     min-height: 160px;
   }
 
-  .visor-barra {
-    gap: .5rem;
-  }
-
-  .visor-canal-id {
-    font-size: .72rem;
-  }
-
-  /* Oculta los botones anterior/siguiente en móvil (usa swipe o teclado) */
   .navegacion-canales {
+
     display: none;
   }
 
-  #contenido-canal {
-    padding: 1rem;
-  }
-
-  .figura-obra img {
-    height: 52vh;
-  }
 }
